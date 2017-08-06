@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="97">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+      <itemPath>/home/dave/NetBeansProjects/XPilotView/GyroAngles.hpp</itemPath>
+      <itemPath>/home/dave/NetBeansProjects/XPilotView/GyroManager.hpp</itemPath>
+      <itemPath>XPlugin.hpp</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <itemPath>/home/dave/NetBeansProjects/XPilotView/GyroAngles.cpp</itemPath>
+      <itemPath>/home/dave/NetBeansProjects/XPilotView/GyroManager.cpp</itemPath>
+      <itemPath>/home/dave/NetBeansProjects/XPilotView/XPlugin.cpp</itemPath>
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+      <logicalFolder name="f1"
+                     displayName="SimpleTest"
+                     projectFiles="true"
+                     kind="TEST">
+      </logicalFolder>
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceRootList>
+    <Elem>/home/dave/NetBeansProjects/XPilotView</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="1">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <incDir>
+            <pElem>./SDK/CHeaders/XPLM</pElem>
+            <pElem>./SDK/CHeaders/Widgets</pElem>
+            <pElem>../QtControlWindowDesign</pElem>
+          </incDir>
+          <commandLine>-fPIC -fvisibility=hidden -m64 -std=c++11 -pthread</commandLine>
+          <preprocessorList>
+            <Elem>APL=0</Elem>
+            <Elem>IBM=0</Elem>
+            <Elem>LIN=1</Elem>
+            <Elem>XPLM200=1</Elem>
+            <Elem>XPLM210=1</Elem>
+          </preprocessorList>
+        </ccTool>
+        <linkerTool>
+          <output>./dist/${CONF}/${PROJECTNAME}/64/lin.xpl</output>
+          <commandlineTool>gcc</commandlineTool>
+          <commandLine>-m64 -static-libgcc -shared -Wl,--version-script=exports.txt -Wl,-rpath=\$$\ORIGIN -Wl,-z,origin</commandLine>
+        </linkerTool>
+      </compileType>
+      <item path="/home/dave/NetBeansProjects/XPilotView/GyroAngles.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="/home/dave/NetBeansProjects/XPilotView/GyroAngles.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/home/dave/NetBeansProjects/XPilotView/GyroManager.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="/home/dave/NetBeansProjects/XPilotView/GyroManager.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/home/dave/NetBeansProjects/XPilotView/XPlugin.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="XPlugin.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <folder path="TestFiles/f1">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f1</output>
+        </linkerTool>
+      </folder>
+    </conf>
+    <conf name="Release" type="1">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+          <incDir>
+            <pElem>./SDK/CHeaders/XPLM</pElem>
+            <pElem>./SDK/CHeaders/Widgets</pElem>
+          </incDir>
+          <commandLine>-fPIC -fvisibility=hidden -m64</commandLine>
+          <preprocessorList>
+            <Elem>APL=0</Elem>
+            <Elem>IBM=0</Elem>
+            <Elem>LIN=1</Elem>
+            <Elem>XPLM200=1</Elem>
+            <Elem>XPLM210=1</Elem>
+          </preprocessorList>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+        <linkerTool>
+          <output>./dist/${CONF}/${PROJECTNAME}/64/lin.xpl</output>
+          <commandlineTool>gcc</commandlineTool>
+          <commandLine>-m64 -static-libgcc -shared -Wl,--version-script=exports.txt</commandLine>
+        </linkerTool>
+      </compileType>
+      <item path="/home/dave/NetBeansProjects/XPilotView/GyroAngles.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="/home/dave/NetBeansProjects/XPilotView/GyroAngles.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/home/dave/NetBeansProjects/XPilotView/GyroManager.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="/home/dave/NetBeansProjects/XPilotView/GyroManager.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/home/dave/NetBeansProjects/XPilotView/XPlugin.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="XPlugin.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <folder path="TestFiles/f1">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f1</output>
+        </linkerTool>
+      </folder>
+    </conf>
+  </confs>
+</configurationDescriptor>
