@@ -9,33 +9,34 @@
 
 
 GyroManager gmgr;
+bool preferencesVisible = false;
 
-/*
- * XPluginStart
- * 
- * Our start routine registers our window and does any other initialization we 
- * must do.
- * 
- */
+XPWidgetID preferencesWidget = NULL;
+XPWidgetID preferencesWindow = NULL;
+XPWidgetID preferencesTextWidget[50] = {NULL};
+
+void mainMenuHandler(void *, void *);
+XPWidgetID createPreferencesWindow(int xl, int yl, int w, int h);
+int preferencesHandler(XPWidgetMessage msg, XPWidgetID widget, long p1, long p2);
+
 PLUGIN_API int XPluginStart(
         char * outName,
         char * outSig,
         char * outDesc)
 {
+    XPLMMenuID mainMenu;
+    int pluginMenuItem;
+
     strcpy(outName, "XPilotView");
     strcpy(outSig, "com.antelopevisuals.xpilotview");
     strcpy(outDesc, "Controls pilot's view from a head mounted gyro.");
 
     std::string ttypath = gmgr.getTTyPath();
 
-    gWindow = XPLMCreateWindow(
-            50, 600, 300, 200, /* Area of the window. */
-            1, /* Start visible. */
-            MyDrawWindowCallback, /* Callbacks */
-            MyHandleKeyCallback,
-            MyHandleMouseClickCallback,
-            NULL); /* Refcon - not used. */
-
+    pluginMenuItem = XPLMAppendMenuItem(XPLMFindPluginsMenu(), "XPilotView", NULL, 1);
+    mainMenu = XPLMCreateMenu("XPilotView", XPLMFindPluginsMenu(), pluginMenuItem, mainMenuHandler, NULL);
+    XPLMAppendMenuItem(mainMenu, "Preferences", (void*) "Preferences", 1);
+   
     return 1;
 }
 
@@ -47,7 +48,11 @@ PLUGIN_API int XPluginStart(
  */
 PLUGIN_API void XPluginStop(void)
 {
-    XPLMDestroyWindow(gWindow);
+    if (preferencesVisible)
+    {
+        XPDestroyWidget(preferencesWidget, 1);
+        preferencesVisible = false;
+    }
 }
 
 /*
@@ -78,84 +83,62 @@ PLUGIN_API void XPluginReceiveMessage(
 {
 }
 
-/*
- * MyDrawingWindowCallback
- * 
- * This callback does the work of drawing our window once per sim cycle each time
- * it is needed.  It dynamically changes the text depending on the saved mouse
- * status.  Note that we don't have to tell X-Plane to redraw us when our text
- * changes; we are redrawn by the sim continuously.
- * 
- */
-void MyDrawWindowCallback(
-        XPLMWindowID inWindowID,
-        void * inRefcon)
+void mainMenuHandler(void *menu, void *item)
 {
-    int left, top, right, bottom;
-    float color[] = {1.0, 1.0, 1.0}; /* RGB White */
-
-    /* First we get the location of the window passed in to us. */
-    XPLMGetWindowGeometry(inWindowID, &left, &top, &right, &bottom);
-
-    /* We now use an XPLMGraphics routine to draw a translucent dark
-     * rectangle that is our window's shape. */
-    XPLMDrawTranslucentDarkBox(left, top, right, bottom);
-
-    /* Finally we draw the text into the window, also using XPLMGraphics
-     * routines.  The NULL indicates no word wrapping. */
-    XPLMDrawString(color, left + 5, top - 20,
-            (char*) (mouseDown ? "I'm a plugin" : "Hello world"), NULL, xplmFont_Basic);
-
-}
-
-/*
- * MyHandleKeyCallback
- * 
- * Our key handling callback does nothing in this plugin.  This is ok; 
- * we simply don't use keyboard input.
- * 
- */
-void MyHandleKeyCallback(
-        XPLMWindowID inWindowID,
-        char inKey,
-        XPLMKeyFlags inFlags,
-        char inVirtualKey,
-        void * inRefcon,
-        int losingFocus)
-{
-}
-
-/*
- * MyHandleMouseClickCallback
- * 
- * Our mouse click callback toggles the status of our mouse variable 
- * as the mouse is clicked.  We then update our text on the next sim 
- * cycle.
- * 
- */
-int MyHandleMouseClickCallback(
-        XPLMWindowID inWindowID,
-        int x,
-        int y,
-        XPLMMouseStatus inMouse,
-        void * inRefcon)
-{
-    /* If we get a down or up, toggle our status click.  We will
-     * never get a down without an up if we accept the down. */
-    if (inMouse == xplm_MouseDown)
+    if (std::string((char*) item) == "Preferences")
     {
-        mouseDown = true;
-    } else if (inMouse == xplm_MouseUp)
-    {
-        mouseDown = false;
+        if (preferencesWidget == NULL)
+        {
+            preferencesWidget = createPreferencesWindow(50, 72, 400, 500);
+        }
+        XPShowWidget(preferencesWidget);
+
+        std::cout << "XPilotView:mainMenuHandler:after showWidget: widgetid=" << preferencesWidget << std::endl;
     }
+}
 
-    /* Returning 1 tells X-Plane that we 'accepted' the click; otherwise
-     * it would be passed to the next window behind us.  If we accept
-     * the click we get mouse moved and mouse up callbacks, if we don't
-     * we do not get any more callbacks.  It is worth noting that we 
-     * will receive mouse moved and mouse up even if the mouse is dragged
-     * out of our window's box as long as the click started in our window's 
-     * box. */
-    return 1;
+XPWidgetID createPreferencesWindow(int xl, int yl, int w, int h)
+{
+    std::cout << "XPilotView: in createPreferencesWindow\n" << std::endl;
+    int x2 = xl + w;
+    int y2 = yl - h;
+    
+    XPWidgetID mainWidgetId = XPCreateWidget(
+            xl, yl, x2, y2, // window extent
+            1, // visible
+            "XPilotView Preferences", // descriptor
+            1, // is root window
+            NULL, // no parent for root window
+            xpWidgetClass_MainWindow // main window class
+            );
+
+    XPSetWidgetProperty(mainWidgetId, xpProperty_MainWindowHasCloseBoxes, 1);
+    XPAddWidgetCallback(mainWidgetId, preferencesHandler);
+
+    XPWidgetID subWindow = XPCreateWidget(
+            xl + 5, yl - 4, x2 - 50, y2 + 30,
+            1, // Visible
+            "", // desc
+            0, // not root
+            mainWidgetId, // child of main window
+            xpWidgetClass_SubWindow);
+
+    XPSetWidgetProperty(subWindow, xpProperty_SubWindowType, xpSubWindowStyle_SubWindow);
+
+    std::cout << "XPilotView: exiting createPreferencesWindow\n" << std::endl;
+    
+    return mainWidgetId;
+}
+
+int preferencesHandler(XPWidgetMessage msg, XPWidgetID widget, long p1, long p2)
+{
+    if (msg = xpMessage_CloseButtonPushed)
+    {
+        if (preferencesVisible)
+        {
+            XPHideWidget(preferencesWidget);
+        }
+        return 1;
+    }
+    return 0;
 }

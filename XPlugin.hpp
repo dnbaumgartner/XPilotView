@@ -17,7 +17,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>
+#include <iostream>
+
 #include "XPLMUtilities.h"
+#include "XPLMProcessing.h"
+#include "XPLMDataAccess.h"
+#include "XPLMMenus.h"
+#include "XPWidgets.h"
+#include "XPStandardWidgets.h"
 #include "XPLMDisplay.h"
 #include "XPLMGraphics.h"
 
