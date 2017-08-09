@@ -22,18 +22,18 @@
 #include <pthread.h>
 
 #include "GyroAngles.hpp"
+#include "PreferencesManager.hpp"
 
 class GyroManager {
 public:
     GyroManager();
-    GyroManager(std::string ttyPath);
     virtual ~GyroManager();
 
-    void setTTyPath(std::string ttyPath);
-    std::string getTTyPath();
     void start();
     void stop();
     GyroAnglesPtr getAngles();
+    void showPreferences(bool);
+    std::string getTTyPath();
     
     static void decode(unsigned char buf[], float result[]);
 
@@ -42,7 +42,7 @@ private:
     static std::string ttyPath;
     static bool isRunnable;
     
-    void startManagerThread(std::string ttyPath);
+    void startManagerThread();
     unsigned int opentty(std::string ttyPath);
     void initGyro();
 

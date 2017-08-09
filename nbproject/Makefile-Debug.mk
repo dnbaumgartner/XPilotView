@@ -37,7 +37,8 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/_ext/d2f23c52/GyroAngles.o \
 	${OBJECTDIR}/_ext/d2f23c52/GyroManager.o \
-	${OBJECTDIR}/_ext/d2f23c52/XPlugin.o
+	${OBJECTDIR}/_ext/d2f23c52/XPlugin.o \
+	${OBJECTDIR}/PreferencesManager.o
 
 # Test Directory
 TESTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tests
@@ -63,11 +64,19 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=
+LDLIBSOPTIONS=../XPilotViewUI/dist/Debug/GNU-Linux/libXPilotViewUI.a /usr/lib/x86_64-linux-gnu/libQt5Core.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Widgets.so
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ./dist/${CONF}/${PROJECTNAME}/64/lin.xpl
+
+./dist/${CONF}/${PROJECTNAME}/64/lin.xpl: ../XPilotViewUI/dist/Debug/GNU-Linux/libXPilotViewUI.a
+
+./dist/${CONF}/${PROJECTNAME}/64/lin.xpl: /usr/lib/x86_64-linux-gnu/libQt5Core.so
+
+./dist/${CONF}/${PROJECTNAME}/64/lin.xpl: /usr/lib/x86_64-linux-gnu/libQt5Gui.so
+
+./dist/${CONF}/${PROJECTNAME}/64/lin.xpl: /usr/lib/x86_64-linux-gnu/libQt5Widgets.so
 
 ./dist/${CONF}/${PROJECTNAME}/64/lin.xpl: ${OBJECTFILES}
 	${MKDIR} -p ./dist/${CONF}/${PROJECTNAME}/64
@@ -76,17 +85,22 @@ LDLIBSOPTIONS=
 ${OBJECTDIR}/_ext/d2f23c52/GyroAngles.o: /home/dave/NetBeansProjects/XPilotView/GyroAngles.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/d2f23c52
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -I../QtControlWindowDesign -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/d2f23c52/GyroAngles.o /home/dave/NetBeansProjects/XPilotView/GyroAngles.cpp
+	$(COMPILE.cc) -g -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/d2f23c52/GyroAngles.o /home/dave/NetBeansProjects/XPilotView/GyroAngles.cpp
 
 ${OBJECTDIR}/_ext/d2f23c52/GyroManager.o: /home/dave/NetBeansProjects/XPilotView/GyroManager.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/d2f23c52
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -I../QtControlWindowDesign -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/d2f23c52/GyroManager.o /home/dave/NetBeansProjects/XPilotView/GyroManager.cpp
+	$(COMPILE.cc) -g -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/d2f23c52/GyroManager.o /home/dave/NetBeansProjects/XPilotView/GyroManager.cpp
 
 ${OBJECTDIR}/_ext/d2f23c52/XPlugin.o: /home/dave/NetBeansProjects/XPilotView/XPlugin.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/d2f23c52
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -I../QtControlWindowDesign -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/d2f23c52/XPlugin.o /home/dave/NetBeansProjects/XPilotView/XPlugin.cpp
+	$(COMPILE.cc) -g -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/d2f23c52/XPlugin.o /home/dave/NetBeansProjects/XPilotView/XPlugin.cpp
+
+${OBJECTDIR}/PreferencesManager.o: PreferencesManager.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PreferencesManager.o PreferencesManager.cpp
 
 # Subprojects
 .build-subprojects:
@@ -108,7 +122,7 @@ ${OBJECTDIR}/_ext/d2f23c52/GyroAngles_nomain.o: ${OBJECTDIR}/_ext/d2f23c52/GyroA
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -I../QtControlWindowDesign -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/d2f23c52/GyroAngles_nomain.o /home/dave/NetBeansProjects/XPilotView/GyroAngles.cpp;\
+	    $(COMPILE.cc) -g -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/d2f23c52/GyroAngles_nomain.o /home/dave/NetBeansProjects/XPilotView/GyroAngles.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/_ext/d2f23c52/GyroAngles.o ${OBJECTDIR}/_ext/d2f23c52/GyroAngles_nomain.o;\
 	fi
@@ -121,7 +135,7 @@ ${OBJECTDIR}/_ext/d2f23c52/GyroManager_nomain.o: ${OBJECTDIR}/_ext/d2f23c52/Gyro
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -I../QtControlWindowDesign -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/d2f23c52/GyroManager_nomain.o /home/dave/NetBeansProjects/XPilotView/GyroManager.cpp;\
+	    $(COMPILE.cc) -g -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/d2f23c52/GyroManager_nomain.o /home/dave/NetBeansProjects/XPilotView/GyroManager.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/_ext/d2f23c52/GyroManager.o ${OBJECTDIR}/_ext/d2f23c52/GyroManager_nomain.o;\
 	fi
@@ -134,9 +148,22 @@ ${OBJECTDIR}/_ext/d2f23c52/XPlugin_nomain.o: ${OBJECTDIR}/_ext/d2f23c52/XPlugin.
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -I../QtControlWindowDesign -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/d2f23c52/XPlugin_nomain.o /home/dave/NetBeansProjects/XPilotView/XPlugin.cpp;\
+	    $(COMPILE.cc) -g -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/d2f23c52/XPlugin_nomain.o /home/dave/NetBeansProjects/XPilotView/XPlugin.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/_ext/d2f23c52/XPlugin.o ${OBJECTDIR}/_ext/d2f23c52/XPlugin_nomain.o;\
+	fi
+
+${OBJECTDIR}/PreferencesManager_nomain.o: ${OBJECTDIR}/PreferencesManager.o PreferencesManager.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/PreferencesManager.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -g -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PreferencesManager_nomain.o PreferencesManager.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/PreferencesManager.o ${OBJECTDIR}/PreferencesManager_nomain.o;\
 	fi
 
 # Run Test Targets

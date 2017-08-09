@@ -14,8 +14,6 @@
 #include "GyroManager.hpp"
 
 void *GyroManagerThread(void *arg);
-
-std::string GyroManager::ttyPath = "/dev/ttyUSB0";
 bool GyroManager::isRunnable = false;
 
 unsigned int sfd;
@@ -23,13 +21,10 @@ struct termios savetty;
 
 GyroAnglesPtr angles = std::make_shared<GyroAngles>();
 
+PreferencesManager prefMgr;
+
 GyroManager::GyroManager()
 {
-}
-
-GyroManager::GyroManager(std::string ttyPath)
-{
-    this->setTTyPath(ttyPath);
 }
 
 GyroManager::~GyroManager()
@@ -37,20 +32,10 @@ GyroManager::~GyroManager()
     this->stop();
 }
 
-void GyroManager::setTTyPath(std::string ttyPath)
-{
-    this->ttyPath = ttyPath;
-}
-
-std::string GyroManager::getTTyPath()
-{
-    return this->ttyPath;
-}
-
 void GyroManager::start()
 {
     this->isRunnable = true;
-    this->startManagerThread(this->ttyPath);
+    this->startManagerThread();
 }
 
 void GyroManager::stop()
@@ -65,14 +50,25 @@ GyroAnglesPtr GyroManager::getAngles()
     return angles;
 }
 
-void GyroManager::startManagerThread(std::string ttypath)
+void GyroManager::showPreferences(bool show)
 {
+    prefMgr.showPreferences(show);
+}
+
+std::string GyroManager::getTTyPath()
+{
+    return prefMgr.getTTyPath();
+}
+
+void GyroManager::startManagerThread()
+{
+    std::string ttypath = prefMgr.getTTyPath();
     sfd = this->opentty(ttypath);
     this->initGyro();
-    
+
     pthread_t gmthread;
     int ret = 0;
-    
+
     ret = pthread_create(&gmthread, NULL, &GyroManagerThread, NULL);
 }
 

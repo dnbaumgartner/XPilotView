@@ -30,9 +30,6 @@
 
 #include "GyroManager.hpp"
 
-static XPLMWindowID gWindow = NULL;
-static bool mouseDown = false;
-
 static void MyDrawWindowCallback(
         XPLMWindowID inWindowID,
         void * inRefcon);

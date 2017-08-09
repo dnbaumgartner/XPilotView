@@ -37,7 +37,8 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/_ext/d2f23c52/GyroAngles.o \
 	${OBJECTDIR}/_ext/d2f23c52/GyroManager.o \
-	${OBJECTDIR}/_ext/d2f23c52/XPlugin.o
+	${OBJECTDIR}/_ext/d2f23c52/XPlugin.o \
+	${OBJECTDIR}/PreferencesManager.o
 
 # Test Directory
 TESTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tests
@@ -88,6 +89,11 @@ ${OBJECTDIR}/_ext/d2f23c52/XPlugin.o: /home/dave/NetBeansProjects/XPilotView/XPl
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/d2f23c52/XPlugin.o /home/dave/NetBeansProjects/XPilotView/XPlugin.cpp
 
+${OBJECTDIR}/PreferencesManager.o: PreferencesManager.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PreferencesManager.o PreferencesManager.cpp
+
 # Subprojects
 .build-subprojects:
 
@@ -137,6 +143,19 @@ ${OBJECTDIR}/_ext/d2f23c52/XPlugin_nomain.o: ${OBJECTDIR}/_ext/d2f23c52/XPlugin.
 	    $(COMPILE.cc) -O2 -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/d2f23c52/XPlugin_nomain.o /home/dave/NetBeansProjects/XPilotView/XPlugin.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/_ext/d2f23c52/XPlugin.o ${OBJECTDIR}/_ext/d2f23c52/XPlugin_nomain.o;\
+	fi
+
+${OBJECTDIR}/PreferencesManager_nomain.o: ${OBJECTDIR}/PreferencesManager.o PreferencesManager.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/PreferencesManager.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -O2 -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PreferencesManager_nomain.o PreferencesManager.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/PreferencesManager.o ${OBJECTDIR}/PreferencesManager_nomain.o;\
 	fi
 
 # Run Test Targets

@@ -6,6 +6,7 @@
                    projectFiles="true">
       <itemPath>/home/dave/NetBeansProjects/XPilotView/GyroAngles.hpp</itemPath>
       <itemPath>/home/dave/NetBeansProjects/XPilotView/GyroManager.hpp</itemPath>
+      <itemPath>PreferencesManager.hpp</itemPath>
       <itemPath>XPlugin.hpp</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -17,6 +18,7 @@
                    projectFiles="true">
       <itemPath>/home/dave/NetBeansProjects/XPilotView/GyroAngles.cpp</itemPath>
       <itemPath>/home/dave/NetBeansProjects/XPilotView/GyroManager.cpp</itemPath>
+      <itemPath>PreferencesManager.cpp</itemPath>
       <itemPath>/home/dave/NetBeansProjects/XPilotView/XPlugin.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -52,7 +54,10 @@
           <incDir>
             <pElem>./SDK/CHeaders/XPLM</pElem>
             <pElem>./SDK/CHeaders/Widgets</pElem>
-            <pElem>../QtControlWindowDesign</pElem>
+            <pElem>/usr/include/x86_64-linux-gnu/qt5</pElem>
+            <pElem>/usr/include/x86_64-linux-gnu/qt5/QtCore</pElem>
+            <pElem>/usr/include/x86_64-linux-gnu/qt5/QtGui</pElem>
+            <pElem>/usr/include/x86_64-linux-gnu/qt5/QtWidgets</pElem>
           </incDir>
           <commandLine>-fPIC -fvisibility=hidden -m64 -std=c++11 -pthread</commandLine>
           <preprocessorList>
@@ -66,8 +71,26 @@
         <linkerTool>
           <output>./dist/${CONF}/${PROJECTNAME}/64/lin.xpl</output>
           <commandlineTool>gcc</commandlineTool>
+          <linkerLibItems>
+            <linkerLibFileItem>../XPilotViewUI/dist/Debug/GNU-Linux/libXPilotViewUI.a</linkerLibFileItem>
+            <linkerLibFileItem>/usr/lib/x86_64-linux-gnu/libQt5Core.so</linkerLibFileItem>
+            <linkerLibFileItem>/usr/lib/x86_64-linux-gnu/libQt5Gui.so</linkerLibFileItem>
+            <linkerLibFileItem>/usr/lib/x86_64-linux-gnu/libQt5Widgets.so</linkerLibFileItem>
+          </linkerLibItems>
           <commandLine>-m64 -static-libgcc -shared -Wl,--version-script=exports.txt -Wl,-rpath=\$$\ORIGIN -Wl,-z,origin</commandLine>
         </linkerTool>
+        <requiredProjects>
+          <makeArtifact PL="/home/dave/NetBeansProjects/XPilotViewUI"
+                        CT="6"
+                        CN="Debug"
+                        AC="true"
+                        BL="false"
+                        WD="/home/dave/NetBeansProjects/XPilotViewUI"
+                        BC="${MAKE}  -f Makefile CONF=Debug"
+                        CC="${MAKE}  -f Makefile CONF=Debug clean"
+                        OP="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libXPilotViewUI.a">
+          </makeArtifact>
+        </requiredProjects>
       </compileType>
       <item path="/home/dave/NetBeansProjects/XPilotView/GyroAngles.cpp"
             ex="false"
@@ -93,6 +116,10 @@
             ex="false"
             tool="1"
             flavor2="0">
+      </item>
+      <item path="PreferencesManager.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PreferencesManager.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="XPlugin.hpp" ex="false" tool="3" flavor2="0">
       </item>
@@ -173,6 +200,10 @@
             ex="false"
             tool="1"
             flavor2="0">
+      </item>
+      <item path="PreferencesManager.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PreferencesManager.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="XPlugin.hpp" ex="false" tool="3" flavor2="0">
       </item>
