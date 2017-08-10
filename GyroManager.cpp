@@ -20,6 +20,8 @@ unsigned int sfd;
 struct termios savetty;
 
 GyroAnglesPtr angles = std::make_shared<GyroAngles>();
+GyroAngles viewCenter(0.0, 0.0, 0.0);
+bool setCenterView = false;
 
 PreferencesManager prefMgr;
 
@@ -53,12 +55,22 @@ GyroAnglesPtr GyroManager::getAngles()
 
 void GyroManager::showPreferences(bool show)
 {
-    prefMgr.showPreferences(show);
+    prefMgr.showPanel(show);
+}
+
+void GyroManager::togglePreferencesPanel()
+{
+    prefMgr.togglePanel();
 }
 
 std::string GyroManager::getTTyPath()
 {
     return prefMgr.getTTyPath();
+}
+
+void GyroManager::setViewCenter()
+{
+    setCenterView = true;
 }
 
 void GyroManager::startManagerThread()
@@ -90,9 +102,17 @@ void *GyroManagerThread(void *arg)
                 if (buf[1] == 0x53)
                 {
                     GyroManager::decode(buf, a);
-                    angles->x = a[0];
-                    angles->y = a[1];
-                    angles->z = a[2];
+                    angles->x = a[0] - viewCenter.x;
+                    angles->y = a[1] - viewCenter.y;
+                    angles->z = a[2] - viewCenter.z;
+                    
+                    if(setCenterView)
+                    {
+                        viewCenter.x = a[0];
+                        viewCenter.y = a[1];
+                        viewCenter.z = a[2];
+                        setCenterView = false;
+                    }
                     //angles = std::make_shared<GyroAngles>(a[0], a[1], a[2]);
                 }
             }

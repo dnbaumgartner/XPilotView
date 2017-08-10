@@ -34,8 +34,10 @@ public:
     GyroAnglesPtr getAngles();
     void showPreferences(bool);
     std::string getTTyPath();
-    static bool isRunnable;
+    void setViewCenter();
+    void togglePreferencesPanel();
     
+    static bool isRunnable;
     static void decode(unsigned char buf[], float result[]);
 
 private:

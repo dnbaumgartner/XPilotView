@@ -30,6 +30,9 @@
 
 #include "GyroManager.hpp"
 
+int PreferencesCommandHandler(XPLMCommandRef, XPLMCommandPhase, void *);
+int CenterViewCommandHandler(XPLMCommandRef, XPLMCommandPhase, void *);
+
 static void MyDrawWindowCallback(
         XPLMWindowID inWindowID,
         void * inRefcon);

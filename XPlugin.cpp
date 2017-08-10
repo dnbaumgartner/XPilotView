@@ -26,10 +26,46 @@ PLUGIN_API int XPluginStart(
     strcpy(outSig, "com.antelopevisuals.xpilotview.0.1");
     strcpy(outDesc, "Controls pilot's view from a head mounted gyro.");
 
-    pluginMenuItem = XPLMAppendMenuItem(XPLMFindPluginsMenu(), "XPilotView", NULL, 1);
-    mainMenu = XPLMCreateMenu("XPilotView", XPLMFindPluginsMenu(), pluginMenuItem, mainMenuHandler, NULL);
-    XPLMAppendMenuItem(mainMenu, "Preferences", (void*) "Preferences", 1);
+    // Menu setup
+    pluginMenuItem = XPLMAppendMenuItem(
+            XPLMFindPluginsMenu(), 
+            "XPilotView", 
+            NULL, 
+            1);
+    mainMenu = XPLMCreateMenu(
+            "XPilotView", 
+            XPLMFindPluginsMenu(), 
+            pluginMenuItem, 
+            mainMenuHandler, 
+            NULL);
+    XPLMAppendMenuItem(
+            mainMenu, 
+            "Preferences", 
+            (void*) "Preferences", 
+            1);
    
+    // Custom commands
+    XPLMCommandRef prefToggleCommand = XPLMCreateCommand(
+            "XPilotView/Preferences/Toggle",
+            "Toggle Preferences Panel");
+    
+    XPLMRegisterCommandHandler(
+            prefToggleCommand,
+            PreferencesCommandHandler,
+            1, // process before x-plane
+            (void *)0);
+    
+    XPLMCommandRef centerViewCommand = XPLMCreateCommand(
+            "XPilotView/View/Center",
+            "Set current view as view center.");
+    
+    XPLMRegisterCommandHandler(
+            centerViewCommand,
+            CenterViewCommandHandler,
+            1, // process before x-plane
+            (void *)0);
+    
+    
     gyroAngles = gyroMgr.getAngles();
     
     return 1;
@@ -81,4 +117,22 @@ void mainMenuHandler(void *menu, void *item)
     {
         gyroMgr.showPreferences(true);
     }
+}
+
+int PreferencesCommandHandler(XPLMCommandRef cmdRef, XPLMCommandPhase phase, void *refcon)
+{
+    if(phase == xplm_CommandEnd)
+    {
+        gyroMgr.togglePreferencesPanel();
+    }
+    return 0;
+}
+
+int CenterViewCommandHandler(XPLMCommandRef cmdRef, XPLMCommandPhase phase, void *refcon)
+{
+    if(phase == xplm_CommandEnd)
+    {
+        gyroMgr.setViewCenter();
+    }
+    return 0;
 }

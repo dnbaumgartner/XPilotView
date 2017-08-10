@@ -33,7 +33,8 @@ public:
     PreferencesManager();
     virtual ~PreferencesManager();
     
-    void showPreferences(bool);
+    void togglePanel();
+    void showPanel(bool);
     std::string getTTyPath();
     
 private:

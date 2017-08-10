@@ -14,6 +14,7 @@
 #include "PreferencesManager.hpp"
 
 PreferencesPanel *prefPanel = NULL;
+bool panelIsVisible = false;
 
 void startGuiThread();
 
@@ -25,7 +26,19 @@ PreferencesManager::~PreferencesManager()
 {
 }
 
-void PreferencesManager::showPreferences(bool show)
+void PreferencesManager::togglePanel()
+{
+    if(panelIsVisible)
+    {
+        this->showPanel(false);
+    }
+    else
+    {
+        this->showPanel(true);
+    }
+}
+
+void PreferencesManager::showPanel(bool show)
 {
     if (show)
     {
@@ -33,12 +46,14 @@ void PreferencesManager::showPreferences(bool show)
         {
             startGuiThread();
         }
+        panelIsVisible = true;
         prefPanel->show();
     }
     else
     {
         if (prefPanel != NULL)
         {
+            panelIsVisible = false;
             prefPanel->hide();
         }
     }
