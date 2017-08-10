@@ -13,20 +13,17 @@
 
 #include "GyroManager.hpp"
 
-void *GyroManagerThread(void *arg);
-bool GyroManager::isRunnable = false;
 
-unsigned int sfd;
-struct termios savetty;
-
-GyroAnglesPtr angles = std::make_shared<GyroAngles>();
-GyroAngles viewCenter(0.0, 0.0, 0.0);
-bool setCenterView = false;
-
-PreferencesManager prefMgr;
+bool GyroManager::isRunning = false;
+bool GyroManager::setCenterView = false;
+unsigned int GyroManager::sfd;
+json* GyroManager::gyroPrefs = NULL;
+GyroAngles GyroManager::viewCenter(0.0, 0.0, 0.0);
+GyroAnglesPtr GyroManager::angles = std::make_shared<GyroAngles>(0.0, 0.0, 0.0);
 
 GyroManager::GyroManager()
 {
+    //viewCenter.setAngles(0.0, 0.0, 0.0);
 }
 
 GyroManager::~GyroManager()
@@ -36,13 +33,14 @@ GyroManager::~GyroManager()
 
 void GyroManager::start()
 {
-    this->isRunnable = true;
+    this->isRunning = true;
+    if (gyroPrefs == NULL) gyroPrefs = prefMgr.getPanel()->getPreferences();
     this->startManagerThread();
 }
 
 void GyroManager::stop()
 {
-    this->isRunnable = false;
+    this->isRunning = false;
     sleep(1); // wait for thread loop to exit
     tcsetattr(sfd, TCSANOW, &savetty);
     close(sfd);
@@ -50,7 +48,7 @@ void GyroManager::stop()
 
 GyroAnglesPtr GyroManager::getAngles()
 {
-    return angles;
+    return GyroManager::angles;
 }
 
 void GyroManager::showPreferences(bool show)
@@ -73,6 +71,51 @@ void GyroManager::setViewCenter()
     setCenterView = true;
 }
 
+void *GyroManagerThread(void *arg)
+{
+    unsigned char buf[80];
+    float a[3];
+
+    while (GyroManager::isRunning)
+    {
+        int rdlen = read(GyroManager::sfd, buf, 1);
+
+        if (rdlen > 0)
+        {
+            if (buf[0] == 0x55)
+            {
+                rdlen = read(GyroManager::sfd, &buf[1], 10);
+                if (buf[1] == 0x53)
+                {
+                    string hscale = (*GyroManager::gyroPrefs)["horizScale"];
+                    float hscalef = std::stof(hscale);
+                    string vscale = (*GyroManager::gyroPrefs)["vertScale"];
+                    float vscalef = std::stof(vscale);
+                    std::cout << "hscale= " << hscalef << " vscale= " << vscalef << std::endl;
+
+                    GyroManager::decode(buf, a);
+                    std::cout << "x= " << a[0] << "y= " << a[1] << "z= " << a[2] << std::endl;
+
+                    AngleSet center = GyroManager::viewCenter.getAngleSet();
+                    float x = (a[0] - center.x) * hscalef;
+                    float y = (a[1] - center.y) * vscalef;
+                    float z = (a[2] - center.z);
+                    std::cout << "GyroMgr: x= " << x << " y= " << y << std::endl;
+
+                    GyroManager::angles->setAngles(x, y, z);
+                    //std::cout << "GyroMgr: angles.x= "  << angles->x << " angles.y= " << angles->y << std::endl;
+
+                    if (GyroManager::setCenterView)
+                    {
+                        GyroManager::viewCenter.setAngles(a[0], a[1], a[2]);
+                        GyroManager::setCenterView = false;
+                    }
+                }
+            }
+        }
+    }
+}
+
 void GyroManager::startManagerThread()
 {
     std::string ttypath = prefMgr.getTTyPath();
@@ -83,41 +126,6 @@ void GyroManager::startManagerThread()
     int ret = 0;
 
     ret = pthread_create(&gmthread, NULL, &GyroManagerThread, NULL);
-}
-
-void *GyroManagerThread(void *arg)
-{
-    unsigned char buf[80];
-    float a[3];
-
-    while (GyroManager::isRunnable)
-    {
-        int rdlen = read(sfd, buf, 1);
-
-        if (rdlen > 0)
-        {
-            if (buf[0] == 0x55)
-            {
-                rdlen = read(sfd, &buf[1], 10);
-                if (buf[1] == 0x53)
-                {
-                    GyroManager::decode(buf, a);
-                    angles->x = a[0] - viewCenter.x;
-                    angles->y = a[1] - viewCenter.y;
-                    angles->z = a[2] - viewCenter.z;
-                    
-                    if(setCenterView)
-                    {
-                        viewCenter.x = a[0];
-                        viewCenter.y = a[1];
-                        viewCenter.z = a[2];
-                        setCenterView = false;
-                    }
-                    //angles = std::make_shared<GyroAngles>(a[0], a[1], a[2]);
-                }
-            }
-        }
-    }
 }
 
 unsigned int GyroManager::opentty(std::string ttypath)

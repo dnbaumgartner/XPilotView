@@ -13,7 +13,7 @@
 
 #include "GyroAngles.hpp"
 
-
+    
     GyroAngles::GyroAngles()
     {
         this->x = 0.0;
@@ -21,25 +21,41 @@
         this->z = 0.0;
     }
 
-    GyroAngles::GyroAngles(GyroAngles* orig)
+    GyroAngles::GyroAngles(float ax, float ay, float az)
     {
-        this->x = orig->x;
-        this->y = orig->y;
-        this->z = orig->z;
-    }
-
-    GyroAngles::GyroAngles(float x, float y, float z)
-    {
-        this->x = x;
-        this->y = y;
-        this->z = z;
+        this->x = ax;
+        this->y = ay;
+        this->z = az;
     }
 
     GyroAngles::~GyroAngles()
     {
     }
     
-    float GyroAngles::x;
-    float GyroAngles::y;
-    float GyroAngles::z;
+    void GyroAngles::setAngles(float ax, float ay, float az)
+    {
+        this->x = ax;
+        this->y = ay;
+        this->z = az;
+    }
+    
+    void GyroAngles::setAngles(double ax, double ay, double az)
+    {
+        this->x = ax;
+        this->y = ay;
+        this->z = az;
+    }
+    
+    void GyroAngles::setAngles(AngleSet a)
+    {
+        this->x = a.x;
+        this->y = a.y;
+        this->z = a.z;
+    }
+    
+    AngleSet GyroAngles::getAngleSet()
+    {
+        AngleSet result = {this->x, this->y, this->z};
+        return result;
+    }
 

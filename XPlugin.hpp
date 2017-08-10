@@ -30,8 +30,13 @@
 
 #include "GyroManager.hpp"
 
-int PreferencesCommandHandler(XPLMCommandRef, XPLMCommandPhase, void *);
 int CenterViewCommandHandler(XPLMCommandRef, XPLMCommandPhase, void *);
+int StartStopCommandHandler(XPLMCommandRef, XPLMCommandPhase, void *);
+void mainMenuHandler(void *, void *);
+
+GyroManager gyroMgr;
+bool preferencesVisible = false;
+GyroAnglesPtr gyroAngles;
 
 static void MyDrawWindowCallback(
         XPLMWindowID inWindowID,

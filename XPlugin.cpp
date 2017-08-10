@@ -7,12 +7,6 @@
 
 #include "XPlugin.hpp"
 
-GyroManager gyroMgr;
-bool preferencesVisible = false;
-
-void mainMenuHandler(void *, void *);
-
-GyroAnglesPtr gyroAngles;
 
 PLUGIN_API int XPluginStart(
         char * outName,
@@ -21,53 +15,52 @@ PLUGIN_API int XPluginStart(
 {
     XPLMMenuID mainMenu;
     int pluginMenuItem;
-    
+
     strcpy(outName, "XPilotView");
     strcpy(outSig, "com.antelopevisuals.xpilotview.0.1");
     strcpy(outDesc, "Controls pilot's view from a head mounted gyro.");
 
     // Menu setup
     pluginMenuItem = XPLMAppendMenuItem(
-            XPLMFindPluginsMenu(), 
-            "XPilotView", 
-            NULL, 
+            XPLMFindPluginsMenu(),
+            "XPilotView",
+            NULL,
             1);
     mainMenu = XPLMCreateMenu(
-            "XPilotView", 
-            XPLMFindPluginsMenu(), 
-            pluginMenuItem, 
-            mainMenuHandler, 
+            "XPilotView",
+            XPLMFindPluginsMenu(),
+            pluginMenuItem,
+            mainMenuHandler,
             NULL);
     XPLMAppendMenuItem(
-            mainMenu, 
-            "Preferences", 
-            (void*) "Preferences", 
+            mainMenu,
+            "Preferences",
+            (void*) "Preferences",
             1);
-   
+
     // Custom commands
-    XPLMCommandRef prefToggleCommand = XPLMCreateCommand(
-            "XPilotView/Preferences/Toggle",
-            "Toggle Preferences Panel");
-    
-    XPLMRegisterCommandHandler(
-            prefToggleCommand,
-            PreferencesCommandHandler,
-            1, // process before x-plane
-            (void *)0);
-    
     XPLMCommandRef centerViewCommand = XPLMCreateCommand(
             "XPilotView/View/Center",
             "Set current view as view center.");
-    
+
     XPLMRegisterCommandHandler(
             centerViewCommand,
             CenterViewCommandHandler,
             1, // process before x-plane
-            (void *)0);
-    
-    
+            (void *) 0);
+
+    XPLMCommandRef startStopCommand = XPLMCreateCommand(
+            "XPilotView/View/StartStop",
+            "Start/Stop view head tracking.");
+
+    XPLMRegisterCommandHandler(
+            startStopCommand,
+            StartStopCommandHandler,
+            1, // process before x-plane
+            (void *) 0);
+
     gyroAngles = gyroMgr.getAngles();
-    
+
     return 1;
 }
 
@@ -119,20 +112,27 @@ void mainMenuHandler(void *menu, void *item)
     }
 }
 
-int PreferencesCommandHandler(XPLMCommandRef cmdRef, XPLMCommandPhase phase, void *refcon)
+int CenterViewCommandHandler(XPLMCommandRef cmdRef, XPLMCommandPhase phase, void *refcon)
 {
-    if(phase == xplm_CommandEnd)
+    if (phase == xplm_CommandEnd)
     {
-        gyroMgr.togglePreferencesPanel();
+        gyroMgr.setViewCenter();
     }
     return 0;
 }
 
-int CenterViewCommandHandler(XPLMCommandRef cmdRef, XPLMCommandPhase phase, void *refcon)
+int StartStopCommandHandler(XPLMCommandRef cmdRef, XPLMCommandPhase phase, void *refcon)
 {
-    if(phase == xplm_CommandEnd)
+    if (phase == xplm_CommandEnd)
     {
-        gyroMgr.setViewCenter();
+        if (GyroManager::isRunning)
+        {
+            gyroMgr.stop();
+        }
+        else
+        {
+            gyroMgr.start();
+        }
     }
     return 0;
 }

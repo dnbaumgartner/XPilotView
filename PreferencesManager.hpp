@@ -29,15 +29,22 @@
 #include "../XPilotViewUI/PreferencesPanel.hpp"
 
 class PreferencesManager {
+    json* preferences = NULL;
+
 public:
     PreferencesManager();
     virtual ~PreferencesManager();
-    
+
     void togglePanel();
     void showPanel(bool);
     std::string getTTyPath();
+    PreferencesPanel* getPanel();
+
+    static PreferencesPanel* prefPanel;
+    static bool panelIsVisible;
     
 private:
+    void startGuiThread();
 
 };
 

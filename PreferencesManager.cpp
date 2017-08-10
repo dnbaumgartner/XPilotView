@@ -13,10 +13,8 @@
 
 #include "PreferencesManager.hpp"
 
-PreferencesPanel *prefPanel = NULL;
-bool panelIsVisible = false;
-
-void startGuiThread();
+PreferencesPanel* PreferencesManager::prefPanel = NULL;
+bool PreferencesManager::panelIsVisible = false;
 
 PreferencesManager::PreferencesManager()
 {
@@ -24,18 +22,32 @@ PreferencesManager::PreferencesManager()
 
 PreferencesManager::~PreferencesManager()
 {
+    if(prefPanel != NULL)
+    {
+        prefPanel->setAttribute(Qt::WA_DeleteOnClose, true);
+        prefPanel->close();
+        //delete(prefPanel);
+    }
 }
 
 void PreferencesManager::togglePanel()
 {
-    if(panelIsVisible)
+    if (panelIsVisible)
     {
         this->showPanel(false);
-    }
-    else
+    } else
     {
         this->showPanel(true);
     }
+}
+
+PreferencesPanel* PreferencesManager::getPanel()
+{
+    if (prefPanel == NULL)
+    {
+        this->startGuiThread();
+    }
+    return prefPanel;
 }
 
 void PreferencesManager::showPanel(bool show)
@@ -44,12 +56,11 @@ void PreferencesManager::showPanel(bool show)
     {
         if (prefPanel == NULL)
         {
-            startGuiThread();
+            this->startGuiThread();
         }
         panelIsVisible = true;
         prefPanel->show();
-    }
-    else
+    } else
     {
         if (prefPanel != NULL)
         {
@@ -63,7 +74,7 @@ std::string PreferencesManager::getTTyPath()
 {
     if (prefPanel == NULL)
     {
-        startGuiThread();
+        this->startGuiThread();
     }
 
     std::string result = prefPanel->getTTyPath();
@@ -78,30 +89,32 @@ void *guiThread(void *arg)
     QApplication app(argc, argv);
 
     // create and show your widgets here
-    prefPanel = new PreferencesPanel();
+    PreferencesManager::prefPanel = new PreferencesPanel();
 
     app.exec();
 
-    if(prefPanel != NULL)
+    if (PreferencesManager::prefPanel != NULL)
     {
-        delete(prefPanel);
-        prefPanel = NULL;
+        delete(PreferencesManager::prefPanel);
+        PreferencesManager::prefPanel = NULL;
     }
+    PreferencesManager::panelIsVisible = false;
 
     pthread_exit(NULL);
 }
 
-void startGuiThread()
+void PreferencesManager::startGuiThread()
 {
     pthread_t appThread;
     int ret;
-    
+
     ret = pthread_create(&appThread, NULL, &guiThread, NULL);
 
     if (ret != 0)
     {
         exit(EXIT_FAILURE);
     }
-    while (prefPanel == NULL) // wait for PreferencesPanel before proceeding
+    // wait for PreferencesPanel before proceeding
+    while (PreferencesManager::prefPanel == NULL)
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }

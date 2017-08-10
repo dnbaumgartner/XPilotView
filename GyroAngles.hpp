@@ -16,19 +16,30 @@
 
 #include <memory>
 
+struct AngleSet
+{
+    float x;
+    float y;
+    float z;
+};
+
 class GyroAngles {
+    float x;
+    float y;
+    float z;
+
 public:
     GyroAngles();
-    GyroAngles(GyroAngles* orig);
     GyroAngles(float x, float y, float z);
     virtual ~GyroAngles();
     
-    static float x;
-    static float y;
-    static float z;
+    void setAngles(float x, float y, float z);
+    void setAngles(double x, double y, double z);
+    void setAngles(AngleSet);
+    AngleSet getAngleSet();
     
 private:
-    
+    AngleSet gangles;
 };
 
 typedef std::shared_ptr<GyroAngles> GyroAnglesPtr;

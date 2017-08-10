@@ -25,6 +25,12 @@
 #include "PreferencesManager.hpp"
 
 class GyroManager {
+
+    struct termios savetty;
+
+
+    PreferencesManager prefMgr;
+
 public:
     GyroManager();
     virtual ~GyroManager();
@@ -36,14 +42,19 @@ public:
     std::string getTTyPath();
     void setViewCenter();
     void togglePreferencesPanel();
-    
-    static bool isRunnable;
     static void decode(unsigned char buf[], float result[]);
+    
+    static bool isRunning;
+    static bool setCenterView;
+    static unsigned int sfd;
+    static json* gyroPrefs;
+    static GyroAngles viewCenter;
+    static GyroAnglesPtr angles;
 
 private:
 
     static std::string ttyPath;
-    
+
     void startManagerThread();
     unsigned int opentty(std::string ttyPath);
     void initGyro();
