@@ -7,11 +7,12 @@
 
 #include "XPlugin.hpp"
 
-
-GyroManager gmgr;
+GyroManager gyroMgr;
 bool preferencesVisible = false;
 
 void mainMenuHandler(void *, void *);
+
+GyroAnglesPtr gyroAngles;
 
 PLUGIN_API int XPluginStart(
         char * outName,
@@ -20,19 +21,17 @@ PLUGIN_API int XPluginStart(
 {
     XPLMMenuID mainMenu;
     int pluginMenuItem;
-
+    
     strcpy(outName, "XPilotView");
-    strcpy(outSig, "com.antelopevisuals.xpilotview");
+    strcpy(outSig, "com.antelopevisuals.xpilotview.0.1");
     strcpy(outDesc, "Controls pilot's view from a head mounted gyro.");
-
-    //XPLMDebugString("Before getTTyPath\n");
-    //std::string ttypath = gmgr.getTTyPath();
-    //XPLMDebugString("After getTTyPath\n");
 
     pluginMenuItem = XPLMAppendMenuItem(XPLMFindPluginsMenu(), "XPilotView", NULL, 1);
     mainMenu = XPLMCreateMenu("XPilotView", XPLMFindPluginsMenu(), pluginMenuItem, mainMenuHandler, NULL);
     XPLMAppendMenuItem(mainMenu, "Preferences", (void*) "Preferences", 1);
    
+    gyroAngles = gyroMgr.getAngles();
+    
     return 1;
 }
 
@@ -44,10 +43,7 @@ PLUGIN_API int XPluginStart(
  */
 PLUGIN_API void XPluginStop(void)
 {
-    if (preferencesVisible)
-    {
-        preferencesVisible = false;
-    }
+    XPLMDebugString("XPilotView: stopped.");
 }
 
 /*
@@ -56,6 +52,7 @@ PLUGIN_API void XPluginStop(void)
  */
 PLUGIN_API void XPluginDisable(void)
 {
+    XPLMDebugString("XPilotView: disabled.");
 }
 
 /*
@@ -82,6 +79,6 @@ void mainMenuHandler(void *menu, void *item)
 {
     if (std::string((char*) item) == "Preferences")
     {
-        gmgr.showPreferences(true);
+        gyroMgr.showPreferences(true);
     }
 }

@@ -41,6 +41,7 @@ void GyroManager::start()
 void GyroManager::stop()
 {
     this->isRunnable = false;
+    sleep(1); // wait for thread loop to exit
     tcsetattr(sfd, TCSANOW, &savetty);
     close(sfd);
 }
@@ -75,8 +76,9 @@ void GyroManager::startManagerThread()
 void *GyroManagerThread(void *arg)
 {
     unsigned char buf[80];
+    float a[3];
 
-    while (true)
+    while (GyroManager::isRunnable)
     {
         int rdlen = read(sfd, buf, 1);
 
@@ -87,9 +89,11 @@ void *GyroManagerThread(void *arg)
                 rdlen = read(sfd, &buf[1], 10);
                 if (buf[1] == 0x53)
                 {
-                    float a[3];
                     GyroManager::decode(buf, a);
-                    angles = std::make_shared<GyroAngles>(a[0], a[1], a[2]);
+                    angles->x = a[0];
+                    angles->y = a[1];
+                    angles->z = a[2];
+                    //angles = std::make_shared<GyroAngles>(a[0], a[1], a[2]);
                 }
             }
         }

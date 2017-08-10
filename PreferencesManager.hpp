@@ -16,6 +16,8 @@
 
 #include <string>
 #include <iostream>
+#include <chrono>
+#include <thread>
 #include <stdio.h>
 #include <termios.h>
 #include <fcntl.h>

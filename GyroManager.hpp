@@ -34,13 +34,13 @@ public:
     GyroAnglesPtr getAngles();
     void showPreferences(bool);
     std::string getTTyPath();
+    static bool isRunnable;
     
     static void decode(unsigned char buf[], float result[]);
 
 private:
 
     static std::string ttyPath;
-    static bool isRunnable;
     
     void startManagerThread();
     unsigned int opentty(std::string ttyPath);

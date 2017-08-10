@@ -19,7 +19,6 @@ void startGuiThread();
 
 PreferencesManager::PreferencesManager()
 {
-    startGuiThread();
 }
 
 PreferencesManager::~PreferencesManager()
@@ -34,7 +33,6 @@ void PreferencesManager::showPreferences(bool show)
         {
             startGuiThread();
         }
-
         prefPanel->show();
     }
     else
@@ -69,7 +67,11 @@ void *guiThread(void *arg)
 
     app.exec();
 
-    prefPanel = NULL;
+    if(prefPanel != NULL)
+    {
+        delete(prefPanel);
+        prefPanel = NULL;
+    }
 
     pthread_exit(NULL);
 }
@@ -78,12 +80,13 @@ void startGuiThread()
 {
     pthread_t appThread;
     int ret;
-
+    
     ret = pthread_create(&appThread, NULL, &guiThread, NULL);
 
     if (ret != 0)
     {
         exit(EXIT_FAILURE);
     }
-    while (prefPanel == NULL) sleep(1);
+    while (prefPanel == NULL) // wait for PreferencesPanel before proceeding
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
