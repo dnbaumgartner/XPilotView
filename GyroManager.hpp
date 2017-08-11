@@ -50,6 +50,7 @@ public:
     static json* gyroPrefs;
     static GyroAngles viewCenter;
     static GyroAnglesPtr angles;
+    static float normalizeAngle(float a);
 
 private:
 

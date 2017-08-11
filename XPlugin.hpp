@@ -30,7 +30,7 @@
 
 #include "GyroManager.hpp"
 
-#define LOOPTIME 0.1
+#define LOOPTIME 0.05
 
 int CenterViewCommandHandler(XPLMCommandRef, XPLMCommandPhase, void *);
 int StartStopCommandHandler(XPLMCommandRef, XPLMCommandPhase, void *);

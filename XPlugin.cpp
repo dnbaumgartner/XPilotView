@@ -60,7 +60,6 @@ PLUGIN_API int XPluginStart(
 
     gyroAngles = gyroMgr.getAngles();
 
-
     pilotsHeadPsi = XPLMFindDataRef("sim/graphics/view/pilots_head_psi"); // heading
     pilotsHeadThe = XPLMFindDataRef("sim/graphics/view/pilots_head_the"); // pitch
     pilotsHeadPhi = XPLMFindDataRef("sim/graphics/view/pilots_head_phi"); // roll

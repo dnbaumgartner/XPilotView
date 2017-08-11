@@ -75,6 +75,7 @@ void *GyroManagerThread(void *arg)
 {
     unsigned char buf[80];
     float a[3];
+    AngleSet lastAngle = {0.0, 0.0, 0.0};
 
     while (GyroManager::isRunning)
     {
@@ -87,6 +88,9 @@ void *GyroManagerThread(void *arg)
                 rdlen = read(GyroManager::sfd, &buf[1], 10);
                 if (buf[1] == 0x53)
                 {
+                    string slag = (*GyroManager::gyroPrefs)["filterLag"];
+                    float lag = std::stof(slag);
+
                     string rscale = (*GyroManager::gyroPrefs)["rollScale"];
                     float rollScale = std::stof(rscale);
                     string pscale = (*GyroManager::gyroPrefs)["pitchScale"];
@@ -96,12 +100,26 @@ void *GyroManagerThread(void *arg)
                     //std::cout << "hscale= " << hscalef << " vscale= " << vscalef << std::endl;
 
                     GyroManager::decode(buf, a);
-                    //std::cout << "x= " << a[0] << "y= " << a[1] << "z= " << a[2] << std::endl;
+
+                    // normalize to the range -90, +90
+                    a[0] = GyroManager::normalizeAngle(a[0]);
+                    a[1] = GyroManager::normalizeAngle(a[1]);
+                    a[2] = GyroManager::normalizeAngle(a[2]);
+                    //std::cout << "roll " << a[0] << " pitch " << a[1] << " yaw " << a[2] << std::endl;
+
+                    // apply smoothing
+                    float deltaA = a[0] - lastAngle.roll;
+                    lastAngle.roll = lastAngle.roll + deltaA / lag;
+                    deltaA = a[1] - lastAngle.pitch;
+                    lastAngle.pitch = lastAngle.pitch + deltaA / lag;
+                    deltaA = a[2] - lastAngle.heading;
+                    lastAngle.heading = lastAngle.heading + deltaA / lag;
+
 
                     AngleSet center = GyroManager::viewCenter.getAngleSet();
-                    float x = (a[0] - center.roll) * rollScale;
-                    float y = (a[1] - center.pitch) * pitchScale;
-                    float z = (a[2] - center.heading) * headingScale;
+                    float x = (lastAngle.roll - center.roll) * rollScale;
+                    float y = (lastAngle.pitch - center.pitch) * pitchScale;
+                    float z = (lastAngle.heading - center.heading) * headingScale;
                     //std::cout << "GyroMgr: x= " << x << " y= " << y << std::endl;
 
                     GyroManager::angles->setAngles(x, y, z);
@@ -116,6 +134,20 @@ void *GyroManagerThread(void *arg)
             }
         }
     }
+}
+
+float GyroManager::normalizeAngle(float a)
+{
+    float result = a;
+
+    if (-180.0 < a && a < -90.0)
+    {
+        result = a + 180.0;
+    } else if (90.0 < a && a < 180)
+    {
+        result = a - 180.0;
+    }
+    return result;
 }
 
 void GyroManager::startManagerThread()
