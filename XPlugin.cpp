@@ -75,6 +75,11 @@ PLUGIN_API int XPluginStart(
  */
 PLUGIN_API void XPluginStop(void)
 {
+    XPLMUnregisterFlightLoopCallback(FlightLoopCallback, NULL);
+    if (gyroMgr.isRunning)
+    {
+        gyroMgr.stop();
+    }
     XPLMDebugString("XPilotView: stopped.");
 }
 
@@ -151,10 +156,10 @@ float FlightLoopCallback(
         void * refcon)
 {
     AngleSet angles = gyroAngles->getAngleSet();
-    
+
     XPLMSetDataf(pilotsHeadPsi, angles.heading);
     XPLMSetDataf(pilotsHeadThe, angles.pitch);
     XPLMSetDataf(pilotsHeadPhi, angles.roll);
-    
+
     return LOOPTIME;
 }

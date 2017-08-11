@@ -29,7 +29,6 @@
 #include "../XPilotViewUI/PreferencesPanel.hpp"
 
 class PreferencesManager {
-    json* preferences = NULL;
 
 public:
     PreferencesManager();

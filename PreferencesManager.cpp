@@ -22,12 +22,6 @@ PreferencesManager::PreferencesManager()
 
 PreferencesManager::~PreferencesManager()
 {
-    if(prefPanel != NULL)
-    {
-        prefPanel->setAttribute(Qt::WA_DeleteOnClose, true);
-        prefPanel->close();
-        //delete(prefPanel);
-    }
 }
 
 void PreferencesManager::togglePanel()
@@ -93,14 +87,7 @@ void *guiThread(void *arg)
 
     app.exec();
 
-    if (PreferencesManager::prefPanel != NULL)
-    {
-        delete(PreferencesManager::prefPanel);
-        PreferencesManager::prefPanel = NULL;
-    }
-    PreferencesManager::panelIsVisible = false;
-
-    pthread_exit(NULL);
+    pthread_exit(0);
 }
 
 void PreferencesManager::startGuiThread()

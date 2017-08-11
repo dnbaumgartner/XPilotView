@@ -23,7 +23,6 @@ GyroAnglesPtr GyroManager::angles = std::make_shared<GyroAngles>(0.0, 0.0, 0.0);
 
 GyroManager::GyroManager()
 {
-    //viewCenter.setAngles(0.0, 0.0, 0.0);
 }
 
 GyroManager::~GyroManager()
@@ -40,10 +39,13 @@ void GyroManager::start()
 
 void GyroManager::stop()
 {
-    this->isRunning = false;
-    sleep(1); // wait for thread loop to exit
-    tcsetattr(sfd, TCSANOW, &savetty);
-    close(sfd);
+    if (this->isRunning)
+    {
+        this->isRunning = false;
+        sleep(1); // wait for thread loop to exit
+        tcsetattr(sfd, TCSANOW, &savetty);
+        close(sfd);
+    }
 }
 
 GyroAnglesPtr GyroManager::getAngles()
@@ -115,16 +117,16 @@ void *GyroManagerThread(void *arg)
                     deltaA = a[2] - lastAngle.heading;
                     lastAngle.heading = lastAngle.heading + deltaA / lag;
 
-
+                    // center the view point
                     AngleSet center = GyroManager::viewCenter.getAngleSet();
                     float x = (lastAngle.roll - center.roll) * rollScale;
                     float y = (lastAngle.pitch - center.pitch) * pitchScale;
                     float z = (lastAngle.heading - center.heading) * headingScale;
-                    //std::cout << "GyroMgr: x= " << x << " y= " << y << std::endl;
 
+                    // angles object will be shared with and read by XPlugin loop
                     GyroManager::angles->setAngles(x, y, z);
-                    //std::cout << "GyroMgr: angles.x= "  << angles->x << " angles.y= " << angles->y << std::endl;
 
+                    // get new center values on command
                     if (GyroManager::setCenterView)
                     {
                         GyroManager::viewCenter.setAngles(a[0], a[1], a[2]);
@@ -134,6 +136,7 @@ void *GyroManagerThread(void *arg)
             }
         }
     }
+    GyroManager::isRunning = false;
 }
 
 float GyroManager::normalizeAngle(float a)
