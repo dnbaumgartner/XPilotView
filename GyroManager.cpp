@@ -87,20 +87,22 @@ void *GyroManagerThread(void *arg)
                 rdlen = read(GyroManager::sfd, &buf[1], 10);
                 if (buf[1] == 0x53)
                 {
-                    string hscale = (*GyroManager::gyroPrefs)["horizScale"];
-                    float hscalef = std::stof(hscale);
-                    string vscale = (*GyroManager::gyroPrefs)["vertScale"];
-                    float vscalef = std::stof(vscale);
-                    std::cout << "hscale= " << hscalef << " vscale= " << vscalef << std::endl;
+                    string rscale = (*GyroManager::gyroPrefs)["rollScale"];
+                    float rollScale = std::stof(rscale);
+                    string pscale = (*GyroManager::gyroPrefs)["pitchScale"];
+                    float pitchScale = std::stof(pscale);
+                    string hscale = (*GyroManager::gyroPrefs)["headingScale"];
+                    float headingScale = std::stof(hscale);
+                    //std::cout << "hscale= " << hscalef << " vscale= " << vscalef << std::endl;
 
                     GyroManager::decode(buf, a);
-                    std::cout << "x= " << a[0] << "y= " << a[1] << "z= " << a[2] << std::endl;
+                    //std::cout << "x= " << a[0] << "y= " << a[1] << "z= " << a[2] << std::endl;
 
                     AngleSet center = GyroManager::viewCenter.getAngleSet();
-                    float x = (a[0] - center.x) * hscalef;
-                    float y = (a[1] - center.y) * vscalef;
-                    float z = (a[2] - center.z);
-                    std::cout << "GyroMgr: x= " << x << " y= " << y << std::endl;
+                    float x = (a[0] - center.roll) * rollScale;
+                    float y = (a[1] - center.pitch) * pitchScale;
+                    float z = (a[2] - center.heading) * headingScale;
+                    //std::cout << "GyroMgr: x= " << x << " y= " << y << std::endl;
 
                     GyroManager::angles->setAngles(x, y, z);
                     //std::cout << "GyroMgr: angles.x= "  << angles->x << " angles.y= " << angles->y << std::endl;

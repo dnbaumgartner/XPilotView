@@ -16,46 +16,46 @@
     
     GyroAngles::GyroAngles()
     {
-        this->x = 0.0;
-        this->y = 0.0;
-        this->z = 0.0;
+        this->roll = 0.0;
+        this->pitch = 0.0;
+        this->heading = 0.0;
     }
 
-    GyroAngles::GyroAngles(float ax, float ay, float az)
+    GyroAngles::GyroAngles(float roll, float pitch, float heading)
     {
-        this->x = ax;
-        this->y = ay;
-        this->z = az;
+        this->roll = roll;
+        this->pitch = pitch;
+        this->heading = heading;
     }
 
     GyroAngles::~GyroAngles()
     {
     }
     
-    void GyroAngles::setAngles(float ax, float ay, float az)
+    void GyroAngles::setAngles(float roll, float pitch, float heading)
     {
-        this->x = ax;
-        this->y = ay;
-        this->z = az;
+        this->roll = roll;
+        this->pitch = pitch;
+        this->heading = heading;
     }
     
-    void GyroAngles::setAngles(double ax, double ay, double az)
+    void GyroAngles::setAngles(double roll, double pitch, double heading)
     {
-        this->x = ax;
-        this->y = ay;
-        this->z = az;
+        this->roll = roll;
+        this->pitch = pitch;
+        this->heading = heading;
     }
     
     void GyroAngles::setAngles(AngleSet a)
     {
-        this->x = a.x;
-        this->y = a.y;
-        this->z = a.z;
+        this->roll = a.roll;
+        this->pitch = a.pitch;
+        this->heading = a.heading;
     }
     
     AngleSet GyroAngles::getAngleSet()
     {
-        AngleSet result = {this->x, this->y, this->z};
+        AngleSet result = {this->roll, this->pitch, this->heading};
         return result;
     }
 

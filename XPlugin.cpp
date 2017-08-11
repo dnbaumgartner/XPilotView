@@ -7,7 +7,6 @@
 
 #include "XPlugin.hpp"
 
-
 PLUGIN_API int XPluginStart(
         char * outName,
         char * outSig,
@@ -60,6 +59,11 @@ PLUGIN_API int XPluginStart(
             (void *) 0);
 
     gyroAngles = gyroMgr.getAngles();
+
+
+    pilotsHeadPsi = XPLMFindDataRef("sim/graphics/view/pilots_head_psi"); // heading
+    pilotsHeadThe = XPLMFindDataRef("sim/graphics/view/pilots_head_the"); // pitch
+    pilotsHeadPhi = XPLMFindDataRef("sim/graphics/view/pilots_head_phi"); // roll
 
     return 1;
 }
@@ -127,12 +131,31 @@ int StartStopCommandHandler(XPLMCommandRef cmdRef, XPLMCommandPhase phase, void 
     {
         if (GyroManager::isRunning)
         {
+            XPLMUnregisterFlightLoopCallback(FlightLoopCallback, NULL);
             gyroMgr.stop();
-        }
-        else
+        } else
         {
             gyroMgr.start();
+            XPLMRegisterFlightLoopCallback(
+                    FlightLoopCallback,
+                    LOOPTIME,
+                    NULL);
         }
     }
     return 0;
+}
+
+float FlightLoopCallback(
+        float timeFromLastCall,
+        float timeFromLastFlightLoop,
+        int counter,
+        void * refcon)
+{
+    AngleSet angles = gyroAngles->getAngleSet();
+    
+    XPLMSetDataf(pilotsHeadPsi, angles.heading);
+    XPLMSetDataf(pilotsHeadThe, angles.pitch);
+    XPLMSetDataf(pilotsHeadPhi, angles.roll);
+    
+    return LOOPTIME;
 }

@@ -16,25 +16,26 @@
 
 #include <memory>
 
+
 struct AngleSet
 {
-    float x;
-    float y;
-    float z;
+    float roll; 
+    float pitch;
+    float heading;
 };
 
 class GyroAngles {
-    float x;
-    float y;
-    float z;
+    float roll; 
+    float pitch;
+    float heading;
 
 public:
     GyroAngles();
-    GyroAngles(float x, float y, float z);
+    GyroAngles(float roll, float pitch, float heading);
     virtual ~GyroAngles();
     
-    void setAngles(float x, float y, float z);
-    void setAngles(double x, double y, double z);
+    void setAngles(float roll, float pitch, float heading);
+    void setAngles(double roll, double pitch, double heading);
     void setAngles(AngleSet);
     AngleSet getAngleSet();
     

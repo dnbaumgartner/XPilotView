@@ -30,6 +30,8 @@
 
 #include "GyroManager.hpp"
 
+#define LOOPTIME 0.1
+
 int CenterViewCommandHandler(XPLMCommandRef, XPLMCommandPhase, void *);
 int StartStopCommandHandler(XPLMCommandRef, XPLMCommandPhase, void *);
 void mainMenuHandler(void *, void *);
@@ -37,6 +39,10 @@ void mainMenuHandler(void *, void *);
 GyroManager gyroMgr;
 bool preferencesVisible = false;
 GyroAnglesPtr gyroAngles;
+
+static XPLMDataRef pilotsHeadPsi;
+static XPLMDataRef pilotsHeadThe;
+static XPLMDataRef pilotsHeadPhi;
 
 static void MyDrawWindowCallback(
         XPLMWindowID inWindowID,
@@ -56,6 +62,13 @@ static int MyHandleMouseClickCallback(
         int y,
         XPLMMouseStatus inMouse,
         void * inRefcon);
+
+
+float FlightLoopCallback(
+        float timeFromLastCall,
+        float timeFromLastFlightLoop,
+        int counter,
+        void * refcon);
 
 PLUGIN_API int XPluginStart(
         char * outName,
