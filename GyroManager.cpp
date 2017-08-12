@@ -11,6 +11,8 @@
  * Created on August 4, 2017, 8:58 PM
  */
 
+#include <complex>
+
 #include "GyroManager.hpp"
 
 
@@ -78,6 +80,7 @@ void *GyroManagerThread(void *arg)
     unsigned char buf[80];
     float a[3];
     AngleSet lastAngle = {0.0, 0.0, 0.0};
+    json* prefs = PreferencesManager::prefPanel->getPreferences();
 
     while (GyroManager::isRunning)
     {
@@ -119,12 +122,51 @@ void *GyroManagerThread(void *arg)
 
                     // center the view point
                     AngleSet center = GyroManager::viewCenter.getAngleSet();
-                    float x = (lastAngle.roll - center.roll) * rollScale;
-                    float y = (lastAngle.pitch - center.pitch) * pitchScale;
-                    float z = (lastAngle.heading - center.heading) * headingScale;
+                    float r = (lastAngle.roll - center.roll);
+                    float p = (lastAngle.pitch - center.pitch);
+                    float h = (lastAngle.heading - center.heading);
+
+                    // Apply exponential acceleration to the view angle
+                    // The formula is:
+                    //
+                    // viewangle = (headangle^x) / y
+                    // 
+                    // Given a curvature value of x, y can be calculated via:
+                    //
+                    //  y = 10^(1.48*x - 1.95))
+                    //
+                    //  This yields a curve such that a head deflection of
+                    //  30 degrees yields a view deflection of 90 degrees.
+                    //  Varing the value of x only changes the curvature of the
+                    //  transform.
+                    //
+
+                    std::string sx = (*prefs)["headingScale"];
+                    float x = stof(sx);
+                    float e = 1.48 * x - 1.95;
+                    float y = pow(10.0, e);
+                    bool sign = signbit(h);
+                    h = std::pow(abs(h), x) / y;
+                    h = (sign ? h : -h);
+
+                    sx = (*prefs)["pitchScale"];
+                    x = stof(sx);
+                    e = 1.48 * x - 1.95;
+                    y = pow(10.0, e);
+                    sign = signbit(p);
+                    p = pow(abs(p), x) / y;
+                    p = (sign ? -p : p);
+
+                    sx = (*prefs)["rollScale"];
+                    x = stof(sx);
+                    e = 1.48 * x - 1.95;
+                    y = pow(10.0, e);
+                    sign = signbit(r);
+                    r = pow(abs(r), x) / y;
+                    r = (sign ? r : -r);
 
                     // angles object will be shared with and read by XPlugin loop
-                    GyroManager::angles->setAngles(x, y, z);
+                    GyroManager::angles->setAngles(r, p, h);
 
                     // get new center values on command
                     if (GyroManager::setCenterView)

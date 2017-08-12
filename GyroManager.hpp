@@ -15,6 +15,7 @@
 #define GYROMANAGER_HPP
 
 #include <string>
+#include <cmath>
 #include <stdio.h>
 #include <termios.h>
 #include <fcntl.h>
