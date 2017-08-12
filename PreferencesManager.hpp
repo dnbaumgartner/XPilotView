@@ -28,6 +28,8 @@
 
 #include "../XPilotViewUI/PreferencesPanel.hpp"
 
+#include "XPilotViewUtils.hpp"
+
 class PreferencesManager {
 
 public:

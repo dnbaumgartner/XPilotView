@@ -14,6 +14,7 @@
 #include <complex>
 
 #include "GyroManager.hpp"
+#include "XPilotViewUtils.hpp"
 
 
 bool GyroManager::isRunning = false;
@@ -34,19 +35,35 @@ GyroManager::~GyroManager()
 
 void GyroManager::start()
 {
-    this->isRunning = true;
-    if (gyroPrefs == NULL) gyroPrefs = prefMgr.getPanel()->getPreferences();
-    this->startManagerThread();
+    try
+    {
+        this->isRunning = true;
+        if (gyroPrefs == NULL) gyroPrefs = prefMgr.getPanel()->getPreferences();
+        this->startManagerThread();
+
+    } catch (const std::exception& ex)
+    {
+        std::string msg( std::string("GyroManager::start() : ") + ex.what());
+        XPilotViewUtils::logMessage(msg);
+    }
 }
 
 void GyroManager::stop()
 {
-    if (this->isRunning)
+    try
     {
-        this->isRunning = false;
-        sleep(1); // wait for thread loop to exit
-        tcsetattr(sfd, TCSANOW, &savetty);
-        close(sfd);
+        if (this->isRunning)
+        {
+            this->isRunning = false;
+            sleep(1); // wait for thread loop to exit
+            tcsetattr(sfd, TCSANOW, &savetty);
+            close(sfd);
+        }
+
+    } catch (const std::exception& ex)
+    {
+        std::string msg( std::string("GyroManager::stop() : ") + ex.what());
+        XPilotViewUtils::logMessage(msg);
     }
 }
 
@@ -82,101 +99,109 @@ void *GyroManagerThread(void *arg)
     AngleSet lastAngle = {0.0, 0.0, 0.0};
     json* prefs = PreferencesManager::prefPanel->getPreferences();
 
-    while (GyroManager::isRunning)
+    try
     {
-        int rdlen = read(GyroManager::sfd, buf, 1);
-
-        if (rdlen > 0)
+        while (GyroManager::isRunning)
         {
-            if (buf[0] == 0x55)
+            int rdlen = read(GyroManager::sfd, buf, 1);
+
+            if (rdlen > 0)
             {
-                rdlen = read(GyroManager::sfd, &buf[1], 10);
-                if (buf[1] == 0x53)
+                if (buf[0] == 0x55)
                 {
-                    string slag = (*GyroManager::gyroPrefs)["filterLag"];
-                    float lag = std::stof(slag);
-
-                    string rscale = (*GyroManager::gyroPrefs)["rollScale"];
-                    float rollScale = std::stof(rscale);
-                    string pscale = (*GyroManager::gyroPrefs)["pitchScale"];
-                    float pitchScale = std::stof(pscale);
-                    string hscale = (*GyroManager::gyroPrefs)["headingScale"];
-                    float headingScale = std::stof(hscale);
-                    //std::cout << "hscale= " << hscalef << " vscale= " << vscalef << std::endl;
-
-                    GyroManager::decode(buf, a);
-
-                    // normalize to the range -90, +90
-                    a[0] = GyroManager::normalizeAngle(a[0]);
-                    a[1] = GyroManager::normalizeAngle(a[1]);
-                    a[2] = GyroManager::normalizeAngle(a[2]);
-                    //std::cout << "roll " << a[0] << " pitch " << a[1] << " yaw " << a[2] << std::endl;
-
-                    // apply smoothing
-                    float deltaA = a[0] - lastAngle.roll;
-                    lastAngle.roll = lastAngle.roll + deltaA / lag;
-                    deltaA = a[1] - lastAngle.pitch;
-                    lastAngle.pitch = lastAngle.pitch + deltaA / lag;
-                    deltaA = a[2] - lastAngle.heading;
-                    lastAngle.heading = lastAngle.heading + deltaA / lag;
-
-                    // center the view point
-                    AngleSet center = GyroManager::viewCenter.getAngleSet();
-                    float r = (lastAngle.roll - center.roll);
-                    float p = (lastAngle.pitch - center.pitch);
-                    float h = (lastAngle.heading - center.heading);
-
-                    // Apply exponential acceleration to the view angle
-                    // The formula is:
-                    //
-                    // viewangle = (headangle^x) / y
-                    // 
-                    // Given a curvature value of x, y can be calculated via:
-                    //
-                    //  y = 10^(1.48*x - 1.95))
-                    //
-                    //  This yields a curve such that a head deflection of
-                    //  30 degrees yields a view deflection of 90 degrees.
-                    //  Varing the value of x only changes the curvature of the
-                    //  transform.
-                    //
-
-                    std::string sx = (*prefs)["headingScale"];
-                    float x = stof(sx);
-                    float e = 1.48 * x - 1.95;
-                    float y = pow(10.0, e);
-                    bool sign = signbit(h);
-                    h = std::pow(abs(h), x) / y;
-                    h = (sign ? h : -h);
-
-                    sx = (*prefs)["pitchScale"];
-                    x = stof(sx);
-                    e = 1.48 * x - 1.95;
-                    y = pow(10.0, e);
-                    sign = signbit(p);
-                    p = pow(abs(p), x) / y;
-                    p = (sign ? -p : p);
-
-                    sx = (*prefs)["rollScale"];
-                    x = stof(sx);
-                    e = 1.48 * x - 1.95;
-                    y = pow(10.0, e);
-                    sign = signbit(r);
-                    r = pow(abs(r), x) / y;
-                    r = (sign ? r : -r);
-
-                    // angles object will be shared with and read by XPlugin loop
-                    GyroManager::angles->setAngles(r, p, h);
-
-                    // get new center values on command
-                    if (GyroManager::setCenterView)
+                    rdlen = read(GyroManager::sfd, &buf[1], 10);
+                    if (buf[1] == 0x53)
                     {
-                        GyroManager::viewCenter.setAngles(a[0], a[1], a[2]);
-                        GyroManager::setCenterView = false;
+                        string slag = (*GyroManager::gyroPrefs)["filterLag"];
+                        float lag = std::stof(slag);
+
+                        string rscale = (*GyroManager::gyroPrefs)["rollScale"];
+                        float rollScale = std::stof(rscale);
+                        string pscale = (*GyroManager::gyroPrefs)["pitchScale"];
+                        float pitchScale = std::stof(pscale);
+                        string hscale = (*GyroManager::gyroPrefs)["headingScale"];
+                        float headingScale = std::stof(hscale);
+                        //std::cout << "hscale= " << hscalef << " vscale= " << vscalef << std::endl;
+
+                        GyroManager::decode(buf, a);
+
+                        // normalize to the range -90, +90
+                        a[0] = GyroManager::normalizeAngle(a[0]);
+                        a[1] = GyroManager::normalizeAngle(a[1]);
+                        a[2] = GyroManager::normalizeAngle(a[2]);
+                        //std::cout << "roll " << a[0] << " pitch " << a[1] << " yaw " << a[2] << std::endl;
+
+                        // apply smoothing
+                        float deltaA = a[0] - lastAngle.roll;
+                        lastAngle.roll = lastAngle.roll + deltaA / lag;
+                        deltaA = a[1] - lastAngle.pitch;
+                        lastAngle.pitch = lastAngle.pitch + deltaA / lag;
+                        deltaA = a[2] - lastAngle.heading;
+                        lastAngle.heading = lastAngle.heading + deltaA / lag;
+
+                        // center the view point
+                        AngleSet center = GyroManager::viewCenter.getAngleSet();
+                        float r = (lastAngle.roll - center.roll);
+                        float p = (lastAngle.pitch - center.pitch);
+                        float h = (lastAngle.heading - center.heading);
+
+                        // Apply exponential acceleration to the view angle
+                        // The formula is:
+                        //
+                        // viewangle = (headangle^x) / y
+                        // 
+                        // Given a curvature value of x, y can be calculated via:
+                        //
+                        //  y = 10^(1.3*x - 1.95))
+                        //
+                        //  This yields a curve such that a head deflection of
+                        //  20 degrees yields a view deflection of 90 degrees.
+                        //  Varing the value of x only changes the curvature of the
+                        //  transform.
+                        //
+
+                        std::string sx = (*prefs)["headingScale"];
+                        float x = stof(sx);
+                        float e = 1.3 * x - 1.95;
+                        float y = pow(10.0, e);
+                        bool sign = signbit(h);
+                        h = std::pow(abs(h), x) / y;
+                        h = (sign ? h : -h);
+
+                        sx = (*prefs)["pitchScale"];
+                        x = stof(sx);
+                        e = 1.3 * x - 1.95;
+                        y = pow(10.0, e);
+                        sign = signbit(p);
+                        p = pow(abs(p), x) / y;
+                        p = (sign ? -p : p);
+
+                        sx = (*prefs)["rollScale"];
+                        x = stof(sx);
+                        e = 1.3 * x - 1.95;
+                        y = pow(10.0, e);
+                        sign = signbit(r);
+                        r = pow(abs(r), x) / y;
+                        r = (sign ? r : -r);
+
+                        // angles object will be shared with and read by XPlugin loop
+                        GyroManager::angles->setAngles(r, p, h);
+
+                        // get new center values on command
+                        if (GyroManager::setCenterView)
+                        {
+                            GyroManager::viewCenter.setAngles(a[0], a[1], a[2]);
+                            GyroManager::setCenterView = false;
+                        }
                     }
                 }
             }
         }
+
+    } catch (const std::exception& ex)
+    {
+        std::string msg( std::string("GyroManager::GyroManagerThread() : ") + ex.what());
+        XPilotViewUtils::logMessage(msg);
     }
     GyroManager::isRunning = false;
 }
@@ -197,14 +222,22 @@ float GyroManager::normalizeAngle(float a)
 
 void GyroManager::startManagerThread()
 {
-    std::string ttypath = prefMgr.getTTyPath();
-    sfd = this->opentty(ttypath);
-    this->initGyro();
+    try
+    {
+        std::string ttypath = prefMgr.getTTyPath();
+        sfd = this->opentty(ttypath);
+        this->initGyro();
 
-    pthread_t gmthread;
-    int ret = 0;
+        pthread_t gmthread;
+        int ret = 0;
 
-    ret = pthread_create(&gmthread, NULL, &GyroManagerThread, NULL);
+        ret = pthread_create(&gmthread, NULL, &GyroManagerThread, NULL);
+
+    } catch (const std::exception& ex)
+    {
+        std::string msg( std::string("GyroManager::startManagerThread() : ") + ex.what());
+        XPilotViewUtils::logMessage(msg);
+    }
 }
 
 unsigned int GyroManager::opentty(std::string ttypath)
@@ -214,27 +247,35 @@ unsigned int GyroManager::opentty(std::string ttypath)
     struct termios tty;
     int rc;
 
-    sfd = open(ttypath.c_str(), O_RDWR | O_NOCTTY);
-    if (sfd < 0) return -1;
+    try
+    {
+        sfd = open(ttypath.c_str(), O_RDWR | O_NOCTTY);
 
-    rc = tcgetattr(sfd, &tty);
-    if (rc < 0) return -2;
-    savetty = tty; /* preserve original settings for restoration */
+        rc = tcgetattr(sfd, &tty);
+        if (rc < 0) sfd = -1;
 
-    cfsetospeed(&tty, spd);
-    cfsetispeed(&tty, spd);
+        savetty = tty; /* preserve original settings for restoration */
 
-    cfmakeraw(&tty);
+        cfsetospeed(&tty, spd);
+        cfsetispeed(&tty, spd);
 
-    tty.c_cc[VMIN] = 1;
-    tty.c_cc[VTIME] = 10;
+        cfmakeraw(&tty);
 
-    tty.c_cflag &= ~PARENB; // no parity bit
-    tty.c_cflag &= ~CSTOPB; // one stop bit
-    tty.c_cflag &= ~CRTSCTS; // no HW flow control
-    tty.c_cflag |= CLOCAL | CREAD;
-    rc = tcsetattr(sfd, TCSANOW, &tty);
-    if (rc < 0) return -3;
+        tty.c_cc[VMIN] = 1;
+        tty.c_cc[VTIME] = 10;
+
+        tty.c_cflag &= ~PARENB; // no parity bit
+        tty.c_cflag &= ~CSTOPB; // one stop bit
+        tty.c_cflag &= ~CRTSCTS; // no HW flow control
+        tty.c_cflag |= CLOCAL | CREAD;
+        rc = tcsetattr(sfd, TCSANOW, &tty);
+        if (rc < 0) sfd = -3;
+
+    } catch (const std::exception& ex)
+    {
+        std::string msg( std::string("GyroManager::opentty() : ") + ex.what());
+        XPilotViewUtils::logMessage(msg);
+    }
 
     return sfd;
 }
@@ -247,12 +288,23 @@ void GyroManager::initGyro()
     unsigned char cmdBaud115200[] = {0xff, 0xaa, 0x63};
     unsigned char cmdBaude9600[] = {0xff, 0xaa, 0x64};
 
-    int wrlen = write(sfd, cmdZeroz, sizeof (cmdZeroz));
-    if (wrlen != sizeof (cmdZeroz)) printf("write cmdZeros failed: %d\n", errno);
-    wrlen = write(sfd, cmdUseSerial, sizeof (cmdZeroz));
-    if (wrlen != sizeof (cmdUseSerial)) printf("write cmdUseSerial failed: %d\n", errno);
-    wrlen = write(sfd, cmdBaude9600, sizeof (cmdZeroz));
-    if (wrlen != sizeof (cmdBaude9600)) printf("write cmdBaude9600 failed: %d\n", errno);
+    try
+    {
+        int wrlen = write(sfd, cmdZeroz, sizeof (cmdZeroz));
+        if (wrlen != sizeof (cmdZeroz)) 
+            throw runtime_error("write cmdZeros failed: "+std::to_string(errno));
+        wrlen = write(sfd, cmdUseSerial, sizeof (cmdZeroz));
+        if (wrlen != sizeof (cmdUseSerial)) 
+            throw runtime_error("write cmdUseSerial failed: "+std::to_string(errno));
+        wrlen = write(sfd, cmdBaude9600, sizeof (cmdZeroz));
+        if (wrlen != sizeof (cmdBaude9600)) 
+            throw runtime_error("write cmdBaude9600 failed: "+std::to_string(errno));
+
+    } catch (const std::exception& ex)
+    {
+        std::string msg( std::string("GyroManager::initGyro() : ") + ex.what());
+        XPilotViewUtils::logMessage(msg);
+    }
 }
 
 void GyroManager::decode(unsigned char buf[], float result[])

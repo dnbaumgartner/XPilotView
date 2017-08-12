@@ -66,12 +66,14 @@ void PreferencesManager::showPanel(bool show)
 
 std::string PreferencesManager::getTTyPath()
 {
+    std::string result("");
+    
     if (prefPanel == NULL)
     {
         this->startGuiThread();
     }
-
-    std::string result = prefPanel->getTTyPath();
+    result = prefPanel->getTTyPath();
+    
     return result;
 }
 
@@ -80,12 +82,20 @@ void *guiThread(void *arg)
     int argc = 1;
     char* argv[] = {"XPilotView"};
 
-    QApplication app(argc, argv);
+    try
+    {
+        QApplication app(argc, argv);
 
-    // create and show your widgets here
-    PreferencesManager::prefPanel = std::make_shared<PreferencesPanel>();
+        // create and show your widgets here
+        PreferencesManager::prefPanel = std::make_shared<PreferencesPanel>();
 
-    app.exec();
+        app.exec();
+
+    } catch (const std::exception& ex)
+    {
+        std::string msg(std::string("PreferencesManager::guiThread() : ") + ex.what());
+        XPilotViewUtils::logMessage(msg);
+    }
 
     pthread_exit(0);
 }
@@ -95,13 +105,21 @@ void PreferencesManager::startGuiThread()
     pthread_t appThread;
     int ret;
 
-    ret = pthread_create(&appThread, NULL, &guiThread, NULL);
-
-    if (ret != 0)
+    try
     {
-        exit(EXIT_FAILURE);
+        ret = pthread_create(&appThread, NULL, &guiThread, NULL);
+
+        if (ret != 0)
+        {
+            exit(EXIT_FAILURE);
+        }
+        // wait for PreferencesPanel before proceeding
+        while (PreferencesManager::prefPanel == NULL)
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    } catch (const std::exception& ex)
+    {
+        std::string msg(std::string("PreferencesManager::startGuiThread() : ") + ex.what());
+        XPilotViewUtils::logMessage(msg);
     }
-    // wait for PreferencesPanel before proceeding
-    while (PreferencesManager::prefPanel == NULL)
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }

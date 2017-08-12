@@ -16,6 +16,7 @@
 
 #include <string>
 #include <cmath>
+#include <exception>
 #include <stdio.h>
 #include <termios.h>
 #include <fcntl.h>
