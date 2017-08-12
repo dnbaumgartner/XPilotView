@@ -37,9 +37,9 @@ public:
     void togglePanel();
     void showPanel(bool);
     std::string getTTyPath();
-    PreferencesPanel* getPanel();
+    PreferencesPanelPtr getPanel();
 
-    static PreferencesPanel* prefPanel;
+    static PreferencesPanelPtr prefPanel;
     static bool panelIsVisible;
     
 private:

@@ -13,7 +13,7 @@
 
 #include "PreferencesManager.hpp"
 
-PreferencesPanel* PreferencesManager::prefPanel = NULL;
+PreferencesPanelPtr PreferencesManager::prefPanel = NULL;
 bool PreferencesManager::panelIsVisible = false;
 
 PreferencesManager::PreferencesManager()
@@ -35,7 +35,7 @@ void PreferencesManager::togglePanel()
     }
 }
 
-PreferencesPanel* PreferencesManager::getPanel()
+PreferencesPanelPtr PreferencesManager::getPanel()
 {
     if (prefPanel == NULL)
     {
@@ -83,7 +83,7 @@ void *guiThread(void *arg)
     QApplication app(argc, argv);
 
     // create and show your widgets here
-    PreferencesManager::prefPanel = new PreferencesPanel();
+    PreferencesManager::prefPanel = std::make_shared<PreferencesPanel>();
 
     app.exec();
 
