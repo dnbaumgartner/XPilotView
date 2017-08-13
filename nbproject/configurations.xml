@@ -7,6 +7,7 @@
       <itemPath>/home/dave/NetBeansProjects/XPilotView/GyroAngles.hpp</itemPath>
       <itemPath>/home/dave/NetBeansProjects/XPilotView/GyroManager.hpp</itemPath>
       <itemPath>/home/dave/NetBeansProjects/XPilotView/PreferencesManager.hpp</itemPath>
+      <itemPath>/home/dave/NetBeansProjects/XPilotView/XPilotViewUtils.hpp</itemPath>
       <itemPath>XPlugin.hpp</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -19,6 +20,7 @@
       <itemPath>/home/dave/NetBeansProjects/XPilotView/GyroAngles.cpp</itemPath>
       <itemPath>/home/dave/NetBeansProjects/XPilotView/GyroManager.cpp</itemPath>
       <itemPath>/home/dave/NetBeansProjects/XPilotView/PreferencesManager.cpp</itemPath>
+      <itemPath>/home/dave/NetBeansProjects/XPilotView/XPilotViewUtils.cpp</itemPath>
       <itemPath>/home/dave/NetBeansProjects/XPilotView/XPlugin.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -122,6 +124,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="/home/dave/NetBeansProjects/XPilotView/XPilotViewUtils.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="/home/dave/NetBeansProjects/XPilotView/XPilotViewUtils.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="/home/dave/NetBeansProjects/XPilotView/XPlugin.cpp"
             ex="false"
             tool="1"
@@ -208,6 +220,16 @@
             flavor2="0">
       </item>
       <item path="/home/dave/NetBeansProjects/XPilotView/PreferencesManager.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/home/dave/NetBeansProjects/XPilotView/XPilotViewUtils.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="/home/dave/NetBeansProjects/XPilotView/XPilotViewUtils.hpp"
             ex="false"
             tool="3"
             flavor2="0">
