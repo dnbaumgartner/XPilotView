@@ -54,7 +54,7 @@ void GyroManager::start()
 
     } catch (const std::exception& ex)
     {
-        std::string msg( std::string("GyroManager::start() : ") + ex.what());
+        std::string msg( std::string("XPilotView: GyroManager::start() : ") + ex.what());
         XPilotViewUtils::logMessage(msg);
     }
 }
@@ -73,7 +73,7 @@ void GyroManager::stop()
 
     } catch (const std::exception& ex)
     {
-        std::string msg( std::string("GyroManager::stop() : ") + ex.what());
+        std::string msg( std::string("XPilotView: GyroManager::stop() : ") + ex.what());
         XPilotViewUtils::logMessage(msg);
     }
 }
@@ -211,7 +211,7 @@ void *GyroManagerThread(void *arg)
 
     } catch (const std::exception& ex)
     {
-        std::string msg( std::string("GyroManager::GyroManagerThread() : ") + ex.what());
+        std::string msg( std::string("XPilotView: GyroManager::GyroManagerThread() : ") + ex.what());
         XPilotViewUtils::logMessage(msg);
     }
     GyroManager::isRunning = false;
@@ -246,7 +246,7 @@ void GyroManager::startManagerThread()
 
     } catch (const std::exception& ex)
     {
-        std::string msg( std::string("GyroManager::startManagerThread() : ") + ex.what());
+        std::string msg( std::string("XPilotView: GyroManager::startManagerThread() : ") + ex.what());
         XPilotViewUtils::logMessage(msg);
     }
 }
@@ -284,7 +284,7 @@ unsigned int GyroManager::opentty(std::string ttypath)
 
     } catch (const std::exception& ex)
     {
-        std::string msg( std::string("GyroManager::opentty() : ") + ex.what());
+        std::string msg( std::string("XPilotView: GyroManager::opentty() : ") + ex.what());
         XPilotViewUtils::logMessage(msg);
     }
 
@@ -313,7 +313,7 @@ void GyroManager::initGyro()
 
     } catch (const std::exception& ex)
     {
-        std::string msg( std::string("GyroManager::initGyro() : ") + ex.what());
+        std::string msg( std::string("XPilotView: GyroManager::initGyro() : ") + ex.what());
         XPilotViewUtils::logMessage(msg);
     }
 }

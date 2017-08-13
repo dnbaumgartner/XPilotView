@@ -104,7 +104,7 @@ void *guiThread(void *arg)
 
     } catch (const std::exception& ex)
     {
-        std::string msg(std::string("PreferencesManager::guiThread() : ") + ex.what());
+        std::string msg(std::string("XPilotView: PreferencesManager::guiThread() : ") + ex.what());
         XPilotViewUtils::logMessage(msg);
     }
 
@@ -130,7 +130,7 @@ void PreferencesManager::startGuiThread()
 
     } catch (const std::exception& ex)
     {
-        std::string msg(std::string("PreferencesManager::startGuiThread() : ") + ex.what());
+        std::string msg(std::string("XPilotView: PreferencesManager::startGuiThread() : ") + ex.what());
         XPilotViewUtils::logMessage(msg);
     }
 }
