@@ -78,13 +78,13 @@ void PreferencesManager::showPanel(bool show)
 std::string PreferencesManager::getTTyPath()
 {
     std::string result("");
-    
+
     if (prefPanel == NULL)
     {
         this->startGuiThread();
     }
     result = prefPanel->getTTyPath();
-    
+
     return result;
 }
 
@@ -97,7 +97,6 @@ void *guiThread(void *arg)
     {
         QApplication app(argc, argv);
 
-        // create and show your widgets here
         PreferencesManager::prefPanel = std::make_shared<PreferencesPanel>();
 
         app.exec();
@@ -107,7 +106,8 @@ void *guiThread(void *arg)
         std::string msg(std::string("XPilotView: PreferencesManager::guiThread() : ") + ex.what());
         XPilotViewUtils::logMessage(msg);
     }
-
+    
+    PreferencesManager::prefPanel = NULL;
     pthread_exit(0);
 }
 

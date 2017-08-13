@@ -54,7 +54,7 @@ void GyroManager::start()
 
     } catch (const std::exception& ex)
     {
-        std::string msg( std::string("XPilotView: GyroManager::start() : ") + ex.what());
+        std::string msg(std::string("XPilotView: GyroManager::start() : ") + ex.what());
         XPilotViewUtils::logMessage(msg);
     }
 }
@@ -73,7 +73,7 @@ void GyroManager::stop()
 
     } catch (const std::exception& ex)
     {
-        std::string msg( std::string("XPilotView: GyroManager::stop() : ") + ex.what());
+        std::string msg(std::string("XPilotView: GyroManager::stop() : ") + ex.what());
         XPilotViewUtils::logMessage(msg);
     }
 }
@@ -110,6 +110,21 @@ void *GyroManagerThread(void *arg)
     AngleSet lastAngle = {0.0, 0.0, 0.0};
     json* prefs = PreferencesManager::prefPanel->getPreferences();
 
+    std::string shAngle = (*prefs)["targetHeadAngle"];
+    std::string svAngle = (*prefs)["targetViewAngle"];
+    float hAngle = std::stof(shAngle);
+    float vAngle = std::stof(svAngle);
+    float logHeadAngle = std::log10(hAngle);
+    float logViewAngle = std::log10(vAngle);
+
+    string srcurve = (*prefs)["rollCurvature"];
+    float rollCurvature = std::stof(srcurve);
+    string spcurve = (*prefs)["pitchCurvature"];
+    float pitchCurvature = std::stof(spcurve);
+    string shcurve = (*prefs)["headingCurvature"];
+    float headingCurvature = std::stof(shcurve);
+
+
     try
     {
         while (GyroManager::isRunning)
@@ -126,22 +141,13 @@ void *GyroManagerThread(void *arg)
                         string slag = (*GyroManager::gyroPrefs)["filterLag"];
                         float lag = std::stof(slag);
 
-                        string rscale = (*GyroManager::gyroPrefs)["rollScale"];
-                        float rollScale = std::stof(rscale);
-                        string pscale = (*GyroManager::gyroPrefs)["pitchScale"];
-                        float pitchScale = std::stof(pscale);
-                        string hscale = (*GyroManager::gyroPrefs)["headingScale"];
-                        float headingScale = std::stof(hscale);
-                        //std::cout << "hscale= " << hscalef << " vscale= " << vscalef << std::endl;
-
                         GyroManager::decode(buf, a);
 
                         // normalize to the range -90, +90
                         a[0] = GyroManager::normalizeAngle(a[0]);
                         a[1] = GyroManager::normalizeAngle(a[1]);
                         a[2] = GyroManager::normalizeAngle(a[2]);
-                        //std::cout << "roll " << a[0] << " pitch " << a[1] << " yaw " << a[2] << std::endl;
-
+                        
                         // apply smoothing
                         float deltaA = a[0] - lastAngle.roll;
                         lastAngle.roll = lastAngle.roll + deltaA / lag;
@@ -156,43 +162,45 @@ void *GyroManagerThread(void *arg)
                         float p = (lastAngle.pitch - center.pitch);
                         float h = (lastAngle.heading - center.heading);
 
-                        // Apply exponential acceleration to the view angle
+                        // Apply exponential acceleration to the head angle
+                        // to yield an accelerated view angle.
+                        //
                         // The formula is:
                         //
-                        // viewangle = (headangle^x) / y
+                        // viewangle = (headangle^curvature) / scale
                         // 
-                        // Given a curvature value of x, y can be calculated via:
+                        // Where scale can be calculated for a target head angle 
+                        // and view angle via:
                         //
-                        //  y = 10^(1.3*x - 1.95))
+                        //  scale = 10^(log(targetHeadAngle) * curvature - log(targetViewAngle)))
+                        //
+                        //  For a target headAngle=20 and viewAngle=90:
+                        //
+                        //  scale = 10^(1.3*curvature - 1.95))
                         //
                         //  This yields a curve such that a head deflection of
                         //  20 degrees yields a view deflection of 90 degrees.
-                        //  Varing the value of x only changes the curvature of the
+                        //  Varing the value of curvature does not change the
+                        //  target angles but only changes the curvature of the
                         //  transform.
                         //
 
-                        std::string sx = (*prefs)["headingScale"];
-                        float x = stof(sx);
-                        float e = 1.3 * x - 1.95;
+                        float e = logHeadAngle * headingCurvature - logViewAngle;
                         float y = pow(10.0, e);
                         bool sign = signbit(h);
-                        h = std::pow(abs(h), x) / y;
+                        h = std::pow(abs(h), headingCurvature) / y;
                         h = (sign ? h : -h);
 
-                        sx = (*prefs)["pitchScale"];
-                        x = stof(sx);
-                        e = 1.3 * x - 1.95;
+                        e = logHeadAngle * pitchCurvature - logViewAngle;
                         y = pow(10.0, e);
                         sign = signbit(p);
-                        p = pow(abs(p), x) / y;
+                        p = pow(abs(p), pitchCurvature) / y;
                         p = (sign ? -p : p);
 
-                        sx = (*prefs)["rollScale"];
-                        x = stof(sx);
-                        e = 1.3 * x - 1.95;
+                        e = logHeadAngle * rollCurvature - logViewAngle;
                         y = pow(10.0, e);
                         sign = signbit(r);
-                        r = pow(abs(r), x) / y;
+                        r = pow(abs(r), rollCurvature) / y;
                         r = (sign ? r : -r);
 
                         // angles object will be shared with and read by XPlugin loop
@@ -211,7 +219,7 @@ void *GyroManagerThread(void *arg)
 
     } catch (const std::exception& ex)
     {
-        std::string msg( std::string("XPilotView: GyroManager::GyroManagerThread() : ") + ex.what());
+        std::string msg(std::string("XPilotView: GyroManager::GyroManagerThread() : ") + ex.what());
         XPilotViewUtils::logMessage(msg);
     }
     GyroManager::isRunning = false;
@@ -246,7 +254,7 @@ void GyroManager::startManagerThread()
 
     } catch (const std::exception& ex)
     {
-        std::string msg( std::string("XPilotView: GyroManager::startManagerThread() : ") + ex.what());
+        std::string msg(std::string("XPilotView: GyroManager::startManagerThread() : ") + ex.what());
         XPilotViewUtils::logMessage(msg);
     }
 }
@@ -284,7 +292,7 @@ unsigned int GyroManager::opentty(std::string ttypath)
 
     } catch (const std::exception& ex)
     {
-        std::string msg( std::string("XPilotView: GyroManager::opentty() : ") + ex.what());
+        std::string msg(std::string("XPilotView: GyroManager::opentty() : ") + ex.what());
         XPilotViewUtils::logMessage(msg);
     }
 
@@ -302,18 +310,18 @@ void GyroManager::initGyro()
     try
     {
         int wrlen = write(sfd, cmdZeroz, sizeof (cmdZeroz));
-        if (wrlen != sizeof (cmdZeroz)) 
-            throw runtime_error("write cmdZeros failed: "+std::to_string(errno));
+        if (wrlen != sizeof (cmdZeroz))
+            throw runtime_error("write cmdZeros failed: " + std::to_string(errno));
         wrlen = write(sfd, cmdUseSerial, sizeof (cmdZeroz));
-        if (wrlen != sizeof (cmdUseSerial)) 
-            throw runtime_error("write cmdUseSerial failed: "+std::to_string(errno));
+        if (wrlen != sizeof (cmdUseSerial))
+            throw runtime_error("write cmdUseSerial failed: " + std::to_string(errno));
         wrlen = write(sfd, cmdBaude9600, sizeof (cmdZeroz));
-        if (wrlen != sizeof (cmdBaude9600)) 
-            throw runtime_error("write cmdBaude9600 failed: "+std::to_string(errno));
+        if (wrlen != sizeof (cmdBaude9600))
+            throw runtime_error("write cmdBaude9600 failed: " + std::to_string(errno));
 
     } catch (const std::exception& ex)
     {
-        std::string msg( std::string("XPilotView: GyroManager::initGyro() : ") + ex.what());
+        std::string msg(std::string("XPilotView: GyroManager::initGyro() : ") + ex.what());
         XPilotViewUtils::logMessage(msg);
     }
 }
