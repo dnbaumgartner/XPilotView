@@ -24,7 +24,7 @@
 
 #include "PreferencesManager.hpp"
 
-PreferencesPanelPtr PreferencesManager::prefPanel = NULL;
+PreferencesPanel* PreferencesManager::prefPanel = NULL;
 bool PreferencesManager::panelIsVisible = false;
 
 PreferencesManager::PreferencesManager()
@@ -46,7 +46,7 @@ void PreferencesManager::togglePanel()
     }
 }
 
-PreferencesPanelPtr PreferencesManager::getPanel()
+PreferencesPanel* PreferencesManager::getPanel()
 {
     if (prefPanel == NULL)
     {
@@ -97,7 +97,9 @@ void *guiThread(void *arg)
     {
         QApplication app(argc, argv);
 
-        PreferencesManager::prefPanel = std::make_shared<PreferencesPanel>();
+        PreferencesManager::prefPanel = new PreferencesPanel();
+        PreferencesManager::prefPanel->setAttribute(Qt::WA_DeleteOnClose);
+        PreferencesManager::prefPanel->setAttribute(Qt::WA_QuitOnClose);
 
         app.exec();
 

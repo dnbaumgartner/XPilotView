@@ -110,118 +110,145 @@ void *GyroManagerThread(void *arg)
     AngleSet lastAngle = {0.0, 0.0, 0.0};
     json* prefs = PreferencesManager::prefPanel->getPreferences();
 
-    std::string shAngle = (*prefs)["targetHeadAngle"];
-    std::string svAngle = (*prefs)["targetViewAngle"];
-    float hAngle = std::stof(shAngle);
-    float vAngle = std::stof(svAngle);
-    float logHeadAngle = std::log10(hAngle);
-    float logViewAngle = std::log10(vAngle);
+    float logHeadAngle;
+    float logViewAngle;
 
-    string srcurve = (*prefs)["rollCurvature"];
-    float rollCurvature = std::stof(srcurve);
-    string spcurve = (*prefs)["pitchCurvature"];
-    float pitchCurvature = std::stof(spcurve);
-    string shcurve = (*prefs)["headingCurvature"];
-    float headingCurvature = std::stof(shcurve);
+    float rollCurvature;
+    float pitchCurvature;
+    float headingCurvature;
 
+    float roll;
+    float pitch;
+    float heading;
 
+    float filterLag;
     try
     {
-        while (GyroManager::isRunning)
+        std::string shAngle = (*prefs)["targetHeadAngle"];
+        std::string svAngle = (*prefs)["targetViewAngle"];
+        float hAngle = std::stof(shAngle);
+        float vAngle = std::stof(svAngle);
+        logHeadAngle = std::log10(hAngle);
+        logViewAngle = std::log10(vAngle);
+
+        string srcurve = (*prefs)["rollCurvature"];
+        rollCurvature = std::stof(srcurve);
+        string spcurve = (*prefs)["pitchCurvature"];
+        pitchCurvature = std::stof(spcurve);
+        string shcurve = (*prefs)["headingCurvature"];
+        headingCurvature = std::stof(shcurve);
+
+        string slag = (*prefs)["filterLag"];
+        filterLag = std::stof(slag);
+
+    } catch (const std::exception& ex)
+    {
+        std::string msg(std::string("XPilotView: GyroManager::GyroManagerThread():initializing curvatures : ") + ex.what());
+        XPilotViewUtils::logMessage(msg);
+    }
+
+    while (GyroManager::isRunning)
+    {
+        int rdlen = read(GyroManager::sfd, buf, 1);
+
+        if (rdlen > 0)
         {
-            int rdlen = read(GyroManager::sfd, buf, 1);
-
-            if (rdlen > 0)
+            if (buf[0] == 0x55)
             {
-                if (buf[0] == 0x55)
+                rdlen = read(GyroManager::sfd, &buf[1], 10);
+                if (buf[1] == 0x53)
                 {
-                    rdlen = read(GyroManager::sfd, &buf[1], 10);
-                    if (buf[1] == 0x53)
+                    try
                     {
-                        string slag = (*GyroManager::gyroPrefs)["filterLag"];
-                        float lag = std::stof(slag);
-
                         GyroManager::decode(buf, a);
 
                         // normalize to the range -90, +90
                         a[0] = GyroManager::normalizeAngle(a[0]);
                         a[1] = GyroManager::normalizeAngle(a[1]);
                         a[2] = GyroManager::normalizeAngle(a[2]);
-                        
+
                         // apply smoothing
                         float deltaA = a[0] - lastAngle.roll;
-                        lastAngle.roll = lastAngle.roll + deltaA / lag;
+                        lastAngle.roll = lastAngle.roll + deltaA / filterLag;
                         deltaA = a[1] - lastAngle.pitch;
-                        lastAngle.pitch = lastAngle.pitch + deltaA / lag;
+                        lastAngle.pitch = lastAngle.pitch + deltaA / filterLag;
                         deltaA = a[2] - lastAngle.heading;
-                        lastAngle.heading = lastAngle.heading + deltaA / lag;
+                        lastAngle.heading = lastAngle.heading + deltaA / filterLag;
 
                         // center the view point
                         AngleSet center = GyroManager::viewCenter.getAngleSet();
-                        float r = (lastAngle.roll - center.roll);
-                        float p = (lastAngle.pitch - center.pitch);
-                        float h = (lastAngle.heading - center.heading);
+                        roll = (lastAngle.roll - center.roll);
+                        pitch = (lastAngle.pitch - center.pitch);
+                        heading = (lastAngle.heading - center.heading);
 
-                        // Apply exponential acceleration to the head angle
-                        // to yield an accelerated view angle.
-                        //
-                        // The formula is:
-                        //
-                        // viewangle = (headangle^curvature) / scale
-                        // 
-                        // Where scale can be calculated for a target head angle 
-                        // and view angle via:
-                        //
-                        //  scale = 10^(log(targetHeadAngle) * curvature - log(targetViewAngle)))
-                        //
-                        //  For a target headAngle=20 and viewAngle=90:
-                        //
-                        //  scale = 10^(1.3*curvature - 1.95))
-                        //
-                        //  This yields a curve such that a head deflection of
-                        //  20 degrees yields a view deflection of 90 degrees.
-                        //  Varing the value of curvature does not change the
-                        //  target angles but only changes the curvature of the
-                        //  transform.
-                        //
+                    } catch (const std::exception& ex)
+                    {
+                        std::string msg(std::string("XPilotView: GyroManager::GyroManagerThread():processing angle values : ") + ex.what());
+                        XPilotViewUtils::logMessage(msg);
+                    }
 
+                    // Apply exponential acceleration to the head angle
+                    // to yield an accelerated view angle.
+                    //
+                    // The formula is:
+                    //
+                    // viewangle = (headangle^curvature) / scale
+                    // 
+                    // Where scale can be calculated for a target head angle 
+                    // and view angle via:
+                    //
+                    //  scale = 10^(log(targetHeadAngle) * curvature - log(targetViewAngle)))
+                    //
+                    //  For a target headAngle=20 and viewAngle=90:
+                    //
+                    //  scale = 10^(1.3*curvature - 1.95))
+                    //
+                    //  This yields a curve such that a head deflection of
+                    //  20 degrees yields a view deflection of 90 degrees.
+                    //  Varing the value of curvature does not change the
+                    //  target angles but only changes the curvature of the
+                    //  transform.
+                    //
+                    try
+                    {
                         float e = logHeadAngle * headingCurvature - logViewAngle;
                         float y = pow(10.0, e);
-                        bool sign = signbit(h);
-                        h = std::pow(abs(h), headingCurvature) / y;
-                        h = (sign ? h : -h);
+                        bool sign = signbit(heading);
+                        heading = std::pow(abs(heading), headingCurvature) / y;
+                        heading = (sign ? heading : -heading);
 
                         e = logHeadAngle * pitchCurvature - logViewAngle;
                         y = pow(10.0, e);
-                        sign = signbit(p);
-                        p = pow(abs(p), pitchCurvature) / y;
-                        p = (sign ? -p : p);
+                        sign = signbit(pitch);
+                        pitch = pow(abs(pitch), pitchCurvature) / y;
+                        pitch = (sign ? -pitch : pitch);
 
                         e = logHeadAngle * rollCurvature - logViewAngle;
                         y = pow(10.0, e);
-                        sign = signbit(r);
-                        r = pow(abs(r), rollCurvature) / y;
-                        r = (sign ? r : -r);
+                        sign = signbit(roll);
+                        roll = pow(abs(roll), rollCurvature) / y;
+                        roll = (sign ? roll : -roll);
 
-                        // angles object will be shared with and read by XPlugin loop
-                        GyroManager::angles->setAngles(r, p, h);
+                    } catch (const std::exception& ex)
+                    {
+                        std::string msg(std::string("XPilotView: GyroManager::GyroManagerThread():applying curvature function : ") + ex.what());
+                        XPilotViewUtils::logMessage(msg);
+                    }
 
-                        // get new center values on command
-                        if (GyroManager::setCenterView)
-                        {
-                            GyroManager::viewCenter.setAngles(a[0], a[1], a[2]);
-                            GyroManager::setCenterView = false;
-                        }
+                    // angles object will be shared with and read by XPlugin loop
+                    GyroManager::angles->setAngles(roll, pitch, heading);
+
+                    // get new center values on command
+                    if (GyroManager::setCenterView)
+                    {
+                        GyroManager::viewCenter.setAngles(a[0], a[1], a[2]);
+                        GyroManager::setCenterView = false;
                     }
                 }
             }
         }
-
-    } catch (const std::exception& ex)
-    {
-        std::string msg(std::string("XPilotView: GyroManager::GyroManagerThread() : ") + ex.what());
-        XPilotViewUtils::logMessage(msg);
     }
+
     GyroManager::isRunning = false;
 }
 
