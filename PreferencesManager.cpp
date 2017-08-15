@@ -77,29 +77,6 @@ void PreferencesManager::showPanel(bool show)
     }
 }
 
-std::string PreferencesManager::getTTyPath()
-{
-    std::string result("");
-
-    try
-    {
-        result = preferences->getValue("ttyPath");
-
-    } catch (const std::exception& ex)
-    {
-        std::string msg(std::string("XPilotView: PreferencesManager::getTTyPath() : ") + ex.what());
-        XPilotViewUtils::logMessage(msg);
-    }
-
-    //    if (prefPanel == NULL)
-    //    {
-    //        this->startGuiThread();
-    //    }
-    //    result = prefPanel->getTTyPath();
-
-    return result;
-}
-
 void *guiThread(void *arg)
 {
     int argc = 1;

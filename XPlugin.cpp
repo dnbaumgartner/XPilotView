@@ -127,7 +127,7 @@ void mainMenuHandler(void *menu, void *item)
 {
     if (std::string((char*) item) == "Preferences")
     {
-        gyroMgr.showPreferences(true);
+        gyroMgr.showPreferencesPanel(true);
     }
 }
 
