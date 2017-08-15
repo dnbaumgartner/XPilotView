@@ -80,7 +80,7 @@ void PreferencesManager::showPanel(bool show)
 void *guiThread(void *arg)
 {
     int argc = 1;
-    char* argv[] = {"XPilotView"};
+    char* argv[] = {&*string("XPilotView").begin()}; // magic way to get a char* from a const char*
 
     try
     {

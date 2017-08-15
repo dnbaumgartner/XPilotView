@@ -99,7 +99,7 @@ void GyroManager::setViewCenter()
 void *GyroManagerThread(void *arg)
 {
     KeyValueStore* preferences = KeyValueStore::Instance();
-    
+
     unsigned char buf[80];
     float a[3];
     AngleSet lastAngle = {0.0, 0.0, 0.0};
@@ -116,6 +116,7 @@ void *GyroManagerThread(void *arg)
     float heading;
 
     float filterLag;
+    
     try
     {
         string shAngle = preferences->getValue("targetHeadAngle");
@@ -150,7 +151,8 @@ void *GyroManagerThread(void *arg)
             if (buf[0] == 0x55)
             {
                 rdlen = read(GyroManager::sfd, &buf[1], 10);
-                if (buf[1] == 0x53)
+                
+                if (buf[1] == 0x53) // this is the angles frame
                 {
                     try
                     {
@@ -206,21 +208,21 @@ void *GyroManagerThread(void *arg)
                     try
                     {
                         float e = logHeadAngle * headingCurvature - logViewAngle;
-                        float y = pow(10.0, e);
+                        float scale = pow(10.0, e);
                         bool sign = signbit(heading);
-                        heading = std::pow(abs(heading), headingCurvature) / y;
+                        heading = std::pow(abs(heading), headingCurvature) / scale;
                         heading = (sign ? heading : -heading);
 
                         e = logHeadAngle * pitchCurvature - logViewAngle;
-                        y = pow(10.0, e);
+                        scale = pow(10.0, e);
                         sign = signbit(pitch);
-                        pitch = pow(abs(pitch), pitchCurvature) / y;
+                        pitch = pow(abs(pitch), pitchCurvature) / scale;
                         pitch = (sign ? -pitch : pitch);
 
                         e = logHeadAngle * rollCurvature - logViewAngle;
-                        y = pow(10.0, e);
+                        scale = pow(10.0, e);
                         sign = signbit(roll);
-                        roll = pow(abs(roll), rollCurvature) / y;
+                        roll = pow(abs(roll), rollCurvature) / scale;
                         roll = (sign ? roll : -roll);
 
                     } catch (const std::exception& ex)
