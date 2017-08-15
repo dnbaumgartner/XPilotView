@@ -53,7 +53,6 @@ public:
     void stop();
     GyroAnglesPtr getAngles();
     void showPreferencesPanel(bool);
-//    std::string getTTyPath();
     void setViewCenter();
     void togglePreferencesPanel();
     static void decode(unsigned char buf[], float result[]);
