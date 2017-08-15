@@ -36,6 +36,7 @@
 
 #include "GyroAngles.hpp"
 #include "PreferencesManager.hpp"
+#include "KeyValueStore.hpp"
 
 class GyroManager {
 
@@ -51,8 +52,8 @@ public:
     void start();
     void stop();
     GyroAnglesPtr getAngles();
-    void showPreferences(bool);
-    std::string getTTyPath();
+    void showPreferencesPanel(bool);
+//    std::string getTTyPath();
     void setViewCenter();
     void togglePreferencesPanel();
     static void decode(unsigned char buf[], float result[]);
@@ -60,14 +61,11 @@ public:
     static bool isRunning;
     static bool setCenterView;
     static unsigned int sfd;
-    static json* gyroPrefs;
     static GyroAngles viewCenter;
     static GyroAnglesPtr angles;
     static float normalizeAngle(float a);
 
 private:
-
-    static std::string ttyPath;
 
     void startManagerThread();
     unsigned int opentty(std::string ttyPath);

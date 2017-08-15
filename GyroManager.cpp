@@ -31,7 +31,6 @@
 bool GyroManager::isRunning = false;
 bool GyroManager::setCenterView = false;
 unsigned int GyroManager::sfd;
-json* GyroManager::gyroPrefs = NULL;
 GyroAngles GyroManager::viewCenter(0.0, 0.0, 0.0);
 GyroAnglesPtr GyroManager::angles = std::make_shared<GyroAngles>(0.0, 0.0, 0.0);
 
@@ -48,9 +47,8 @@ void GyroManager::start()
 {
     try
     {
-        this->isRunning = true;
-        if (gyroPrefs == NULL) gyroPrefs = prefMgr.getPanel()->getPreferences();
         this->startManagerThread();
+        this->isRunning = true;
 
     } catch (const std::exception& ex)
     {
@@ -83,7 +81,7 @@ GyroAnglesPtr GyroManager::getAngles()
     return GyroManager::angles;
 }
 
-void GyroManager::showPreferences(bool show)
+void GyroManager::showPreferencesPanel(bool show)
 {
     prefMgr.showPanel(show);
 }
@@ -93,11 +91,6 @@ void GyroManager::togglePreferencesPanel()
     prefMgr.togglePanel();
 }
 
-std::string GyroManager::getTTyPath()
-{
-    return prefMgr.getTTyPath();
-}
-
 void GyroManager::setViewCenter()
 {
     setCenterView = true;
@@ -105,10 +98,11 @@ void GyroManager::setViewCenter()
 
 void *GyroManagerThread(void *arg)
 {
+    KeyValueStore* preferences = KeyValueStore::Instance();
+    
     unsigned char buf[80];
     float a[3];
     AngleSet lastAngle = {0.0, 0.0, 0.0};
-    json* prefs = PreferencesManager::prefPanel->getPreferences();
 
     float logHeadAngle;
     float logViewAngle;
@@ -124,21 +118,21 @@ void *GyroManagerThread(void *arg)
     float filterLag;
     try
     {
-        std::string shAngle = (*prefs)["targetHeadAngle"];
-        std::string svAngle = (*prefs)["targetViewAngle"];
+        string shAngle = preferences->getValue("targetHeadAngle");
+        string svAngle = preferences->getValue("targetViewAngle");
         float hAngle = std::stof(shAngle);
         float vAngle = std::stof(svAngle);
         logHeadAngle = std::log10(hAngle);
         logViewAngle = std::log10(vAngle);
 
-        string srcurve = (*prefs)["rollCurvature"];
+        string srcurve = preferences->getValue("rollCurvature");
         rollCurvature = std::stof(srcurve);
-        string spcurve = (*prefs)["pitchCurvature"];
+        string spcurve = preferences->getValue("pitchCurvature");
         pitchCurvature = std::stof(spcurve);
-        string shcurve = (*prefs)["headingCurvature"];
+        string shcurve = preferences->getValue("headingCurvature");
         headingCurvature = std::stof(shcurve);
 
-        string slag = (*prefs)["filterLag"];
+        string slag = preferences->getValue("filterLag");
         filterLag = std::stof(slag);
 
     } catch (const std::exception& ex)
@@ -270,7 +264,7 @@ void GyroManager::startManagerThread()
 {
     try
     {
-        std::string ttypath = prefMgr.getTTyPath();
+        std::string ttypath = KeyValueStore::Instance()->getValue("ttyPath");
         sfd = this->opentty(ttypath);
         this->initGyro();
 

@@ -40,9 +40,11 @@
 #include "../XPilotViewUI/PreferencesPanel.hpp"
 
 #include "XPilotViewUtils.hpp"
+#include "KeyValueStore.hpp"
 
 class PreferencesManager {
-
+    KeyValueStore* preferences;
+    
 public:
     PreferencesManager();
     virtual ~PreferencesManager();
@@ -50,13 +52,15 @@ public:
     void togglePanel();
     void showPanel(bool);
     std::string getTTyPath();
-    PreferencesPanelPtr getPanel();
+    PreferencesPanel* getPanel();
 
-    static PreferencesPanelPtr prefPanel;
+    static PreferencesPanel* prefPanel;
     static bool panelIsVisible;
     
 private:
     void startGuiThread();
+    void initPreferences();
+    std::string getWorkingDirectory();
 
 };
 

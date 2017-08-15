@@ -6,6 +6,7 @@
                    projectFiles="true">
       <itemPath>/home/dave/NetBeansProjects/XPilotView/GyroAngles.hpp</itemPath>
       <itemPath>/home/dave/NetBeansProjects/XPilotView/GyroManager.hpp</itemPath>
+      <itemPath>KeyValueStore.hpp</itemPath>
       <itemPath>/home/dave/NetBeansProjects/XPilotView/PreferencesManager.hpp</itemPath>
       <itemPath>/home/dave/NetBeansProjects/XPilotView/XPilotViewUtils.hpp</itemPath>
       <itemPath>XPlugin.hpp</itemPath>
@@ -19,6 +20,7 @@
                    projectFiles="true">
       <itemPath>/home/dave/NetBeansProjects/XPilotView/GyroAngles.cpp</itemPath>
       <itemPath>/home/dave/NetBeansProjects/XPilotView/GyroManager.cpp</itemPath>
+      <itemPath>KeyValueStore.cpp</itemPath>
       <itemPath>/home/dave/NetBeansProjects/XPilotView/PreferencesManager.cpp</itemPath>
       <itemPath>/home/dave/NetBeansProjects/XPilotView/XPilotViewUtils.cpp</itemPath>
       <itemPath>/home/dave/NetBeansProjects/XPilotView/XPlugin.cpp</itemPath>
@@ -39,6 +41,7 @@
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>Makefile</itemPath>
     </logicalFolder>
+    <itemPath>COPYING</itemPath>
   </logicalFolder>
   <sourceRootList>
     <Elem>/home/dave/NetBeansProjects/XPilotView</Elem>
@@ -139,6 +142,12 @@
             tool="1"
             flavor2="0">
       </item>
+      <item path="COPYING" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="KeyValueStore.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="KeyValueStore.hpp" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="XPlugin.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <folder path="TestFiles/f1">
@@ -238,6 +247,12 @@
             ex="false"
             tool="1"
             flavor2="0">
+      </item>
+      <item path="COPYING" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="KeyValueStore.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="KeyValueStore.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="XPlugin.hpp" ex="false" tool="3" flavor2="0">
       </item>

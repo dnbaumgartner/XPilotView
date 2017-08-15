@@ -26,9 +26,11 @@
 
 PreferencesPanel* PreferencesManager::prefPanel = NULL;
 bool PreferencesManager::panelIsVisible = false;
+KeyValueStore* preferences = NULL;
 
 PreferencesManager::PreferencesManager()
 {
+    initPreferences();
 }
 
 PreferencesManager::~PreferencesManager()
@@ -79,11 +81,21 @@ std::string PreferencesManager::getTTyPath()
 {
     std::string result("");
 
-    if (prefPanel == NULL)
+    try
     {
-        this->startGuiThread();
+        result = preferences->getValue("ttyPath");
+
+    } catch (const std::exception& ex)
+    {
+        std::string msg(std::string("XPilotView: PreferencesManager::getTTyPath() : ") + ex.what());
+        XPilotViewUtils::logMessage(msg);
     }
-    result = prefPanel->getTTyPath();
+
+    //    if (prefPanel == NULL)
+    //    {
+    //        this->startGuiThread();
+    //    }
+    //    result = prefPanel->getTTyPath();
 
     return result;
 }
@@ -108,7 +120,7 @@ void *guiThread(void *arg)
         std::string msg(std::string("XPilotView: PreferencesManager::guiThread() : ") + ex.what());
         XPilotViewUtils::logMessage(msg);
     }
-    
+
     PreferencesManager::prefPanel = NULL;
     pthread_exit(0);
 }
@@ -135,4 +147,55 @@ void PreferencesManager::startGuiThread()
         std::string msg(std::string("XPilotView: PreferencesManager::startGuiThread() : ") + ex.what());
         XPilotViewUtils::logMessage(msg);
     }
+}
+
+void PreferencesManager::initPreferences()
+{
+    try
+    {
+        preferences = KeyValueStore::Instance();
+
+        std::string filePath = "/Output/preferences/XPilotViewPrefs.json";
+        std::string fullPath = this->getWorkingDirectory() + filePath;
+
+        int result = preferences->load(fullPath);
+        
+        if (result < 0) // if error assume file is not there or corrupt so save a default set
+        {
+            preferences->setValue("ttyPath", "/dev/ttyUSB0");
+            preferences->setValue("headingCurvature", "2.4");
+            preferences->setValue("pitchCurvature", "2.4");
+            preferences->setValue("rollCurvature", "2.4");
+            preferences->setValue("filterLag", "20.0");
+            preferences->setValue("targetHeadAngle", "20.0");
+            preferences->setValue("targetViewAngle", "90.0");
+            
+            preferences->save();
+        }
+
+    } catch (const std::exception& ex)
+    {
+        std::string msg(std::string("XPilotView: PreferencesManager::initKeyValueStore() : ") + ex.what());
+        XPilotViewUtils::logMessage(msg);
+    }
+}
+
+std::string PreferencesManager::getWorkingDirectory()
+{
+    std::string result("");
+    size_t size;
+    char* buf = NULL;
+
+    long path_max = pathconf(".", _PC_PATH_MAX);
+    if (path_max == -1)
+        size = 1024;
+    else if (path_max > 10240)
+        size = 10240;
+    else
+        size = path_max;
+
+    buf = (char*) realloc(buf, size);
+    getcwd(buf, size);
+
+    return result.append(buf);
 }
