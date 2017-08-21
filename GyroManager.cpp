@@ -217,13 +217,13 @@ void *GyroManagerThread(void *arg)
                         scale = pow(10.0, e);
                         sign = signbit(pitch);
                         pitch = pow(abs(pitch), pitchCurvature) / scale;
-                        pitch = (sign ? -pitch : pitch);
+                        pitch = (sign ? pitch : -pitch);
 
                         e = logHeadAngle * rollCurvature - logViewAngle;
                         scale = pow(10.0, e);
                         sign = signbit(roll);
                         roll = pow(abs(roll), rollCurvature) / scale;
-                        roll = (sign ? roll : -roll);
+                        roll = (sign ? -roll : roll);
 
                     } catch (const std::exception& ex)
                     {
@@ -324,23 +324,21 @@ unsigned int GyroManager::opentty(std::string ttypath)
 
 void GyroManager::initGyro()
 {
-    unsigned char cmdZeroz[] = {0xff, 0xaa, 0x52};
-    unsigned char cmdUseSerial[] = {0xff, 0xaa, 0x61};
-    unsigned char cmdUseI2C[] = {0xff, 0xaa, 0x62};
-    unsigned char cmdBaud115200[] = {0xff, 0xaa, 0x63};
-    unsigned char cmdBaude9600[] = {0xff, 0xaa, 0x64};
+    unsigned char cmdBaud115200[] = {0xff, 0xaa, 0x04, 0x06, 0x00};
+    unsigned char cmdRate100[] = {0xff, 0xaa, 0x03, 0x09, 0x00};
+    unsigned char cmdSave[] = {0xff, 0xaa, 0x00, 0x00, 0x00};
 
     try
     {
-        int wrlen = write(sfd, cmdZeroz, sizeof (cmdZeroz));
-        if (wrlen != sizeof (cmdZeroz))
-            throw runtime_error("write cmdZeros failed: " + std::to_string(errno));
-        wrlen = write(sfd, cmdUseSerial, sizeof (cmdZeroz));
-        if (wrlen != sizeof (cmdUseSerial))
-            throw runtime_error("write cmdUseSerial failed: " + std::to_string(errno));
-        wrlen = write(sfd, cmdBaude9600, sizeof (cmdZeroz));
-        if (wrlen != sizeof (cmdBaude9600))
-            throw runtime_error("write cmdBaude9600 failed: " + std::to_string(errno));
+        int wrlen = write(sfd, cmdBaud115200, sizeof (cmdBaud115200));
+        if (wrlen != sizeof (cmdBaud115200))
+            throw runtime_error("write cmdBaud115200 failed: " + std::to_string(errno));
+        wrlen = write(sfd, cmdRate100, sizeof (cmdRate100));
+        if (wrlen != sizeof (cmdRate100))
+            throw runtime_error("write cmdRate100 failed: " + std::to_string(errno));
+        wrlen = write(sfd, cmdSave, sizeof (cmdSave));
+        if (wrlen != sizeof (cmdSave))
+            throw runtime_error("write cmdSave failed: " + std::to_string(errno));
 
     } catch (const std::exception& ex)
     {
