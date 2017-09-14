@@ -40,17 +40,10 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/d2f23c52/PreferencesManager.o \
 	${OBJECTDIR}/_ext/d2f23c52/XPilotViewUtils.o \
 	${OBJECTDIR}/_ext/d2f23c52/XPlugin.o \
-	${OBJECTDIR}/KeyValueStore.o
+	${OBJECTDIR}/KeyValueStore.o \
+	${OBJECTDIR}/PreferencesPanel.o \
+	${OBJECTDIR}/moc_PreferencesPanel.o
 
-# Test Directory
-TESTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tests
-
-# Test Files
-TESTFILES= \
-	${TESTDIR}/TestFiles/f1
-
-# Test Object Files
-TESTOBJECTFILES=
 
 # C Compiler Flags
 CFLAGS=
@@ -106,104 +99,18 @@ ${OBJECTDIR}/KeyValueStore.o: KeyValueStore.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/KeyValueStore.o KeyValueStore.cpp
 
+${OBJECTDIR}/PreferencesPanel.o: PreferencesPanel.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PreferencesPanel.o PreferencesPanel.cpp
+
+${OBJECTDIR}/moc_PreferencesPanel.o: moc_PreferencesPanel.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/moc_PreferencesPanel.o moc_PreferencesPanel.cpp
+
 # Subprojects
 .build-subprojects:
-
-# Build Test Targets
-.build-tests-conf: .build-tests-subprojects .build-conf ${TESTFILES}
-.build-tests-subprojects:
-
-${TESTDIR}/TestFiles/f1: ${OBJECTFILES:%.o=%_nomain.o}
-	${MKDIR} -p ${TESTDIR}/TestFiles
-	${LINK.cc}   -o ${TESTDIR}/TestFiles/f1 $^ ${LDLIBSOPTIONS} 
-
-
-${OBJECTDIR}/_ext/d2f23c52/GyroAngles_nomain.o: ${OBJECTDIR}/_ext/d2f23c52/GyroAngles.o /home/dave/NetBeansProjects/XPilotView/GyroAngles.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/d2f23c52
-	@NMOUTPUT=`${NM} ${OBJECTDIR}/_ext/d2f23c52/GyroAngles.o`; \
-	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
-	then  \
-	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -O2 -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/d2f23c52/GyroAngles_nomain.o /home/dave/NetBeansProjects/XPilotView/GyroAngles.cpp;\
-	else  \
-	    ${CP} ${OBJECTDIR}/_ext/d2f23c52/GyroAngles.o ${OBJECTDIR}/_ext/d2f23c52/GyroAngles_nomain.o;\
-	fi
-
-${OBJECTDIR}/_ext/d2f23c52/GyroManager_nomain.o: ${OBJECTDIR}/_ext/d2f23c52/GyroManager.o /home/dave/NetBeansProjects/XPilotView/GyroManager.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/d2f23c52
-	@NMOUTPUT=`${NM} ${OBJECTDIR}/_ext/d2f23c52/GyroManager.o`; \
-	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
-	then  \
-	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -O2 -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/d2f23c52/GyroManager_nomain.o /home/dave/NetBeansProjects/XPilotView/GyroManager.cpp;\
-	else  \
-	    ${CP} ${OBJECTDIR}/_ext/d2f23c52/GyroManager.o ${OBJECTDIR}/_ext/d2f23c52/GyroManager_nomain.o;\
-	fi
-
-${OBJECTDIR}/_ext/d2f23c52/PreferencesManager_nomain.o: ${OBJECTDIR}/_ext/d2f23c52/PreferencesManager.o /home/dave/NetBeansProjects/XPilotView/PreferencesManager.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/d2f23c52
-	@NMOUTPUT=`${NM} ${OBJECTDIR}/_ext/d2f23c52/PreferencesManager.o`; \
-	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
-	then  \
-	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -O2 -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/d2f23c52/PreferencesManager_nomain.o /home/dave/NetBeansProjects/XPilotView/PreferencesManager.cpp;\
-	else  \
-	    ${CP} ${OBJECTDIR}/_ext/d2f23c52/PreferencesManager.o ${OBJECTDIR}/_ext/d2f23c52/PreferencesManager_nomain.o;\
-	fi
-
-${OBJECTDIR}/_ext/d2f23c52/XPilotViewUtils_nomain.o: ${OBJECTDIR}/_ext/d2f23c52/XPilotViewUtils.o /home/dave/NetBeansProjects/XPilotView/XPilotViewUtils.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/d2f23c52
-	@NMOUTPUT=`${NM} ${OBJECTDIR}/_ext/d2f23c52/XPilotViewUtils.o`; \
-	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
-	then  \
-	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -O2 -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/d2f23c52/XPilotViewUtils_nomain.o /home/dave/NetBeansProjects/XPilotView/XPilotViewUtils.cpp;\
-	else  \
-	    ${CP} ${OBJECTDIR}/_ext/d2f23c52/XPilotViewUtils.o ${OBJECTDIR}/_ext/d2f23c52/XPilotViewUtils_nomain.o;\
-	fi
-
-${OBJECTDIR}/_ext/d2f23c52/XPlugin_nomain.o: ${OBJECTDIR}/_ext/d2f23c52/XPlugin.o /home/dave/NetBeansProjects/XPilotView/XPlugin.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/d2f23c52
-	@NMOUTPUT=`${NM} ${OBJECTDIR}/_ext/d2f23c52/XPlugin.o`; \
-	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
-	then  \
-	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -O2 -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/d2f23c52/XPlugin_nomain.o /home/dave/NetBeansProjects/XPilotView/XPlugin.cpp;\
-	else  \
-	    ${CP} ${OBJECTDIR}/_ext/d2f23c52/XPlugin.o ${OBJECTDIR}/_ext/d2f23c52/XPlugin_nomain.o;\
-	fi
-
-${OBJECTDIR}/KeyValueStore_nomain.o: ${OBJECTDIR}/KeyValueStore.o KeyValueStore.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	@NMOUTPUT=`${NM} ${OBJECTDIR}/KeyValueStore.o`; \
-	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
-	then  \
-	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -O2 -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/KeyValueStore_nomain.o KeyValueStore.cpp;\
-	else  \
-	    ${CP} ${OBJECTDIR}/KeyValueStore.o ${OBJECTDIR}/KeyValueStore_nomain.o;\
-	fi
-
-# Run Test Targets
-.test-conf:
-	@if [ "${TEST}" = "" ]; \
-	then  \
-	    ${TESTDIR}/TestFiles/f1 || true; \
-	else  \
-	    ./${TEST} || true; \
-	fi
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}

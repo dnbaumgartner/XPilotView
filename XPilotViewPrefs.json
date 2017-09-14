@@ -1,0 +1,5 @@
+{
+    "horizAccel": "1.6",
+    "ttyPath": "/dev/ttyUSB0",
+    "vertAccel": "1.4"
+}
