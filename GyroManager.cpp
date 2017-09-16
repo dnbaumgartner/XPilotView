@@ -162,7 +162,7 @@ void *GyroManagerThread(void *arg)
                         a[0] = GyroManager::normalizeAngle(a[0]);
                         a[1] = GyroManager::normalizeAngle(a[1]);
                         a[2] = GyroManager::normalizeAngle(a[2]);
-
+                        
                         // apply smoothing
                         float deltaA = a[0] - lastAngle.roll;
                         lastAngle.roll = lastAngle.roll + deltaA / filterLag;
