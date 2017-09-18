@@ -26,7 +26,28 @@
 
 #include "GyroManager.hpp"
 #include "XPilotViewUtils.hpp"
+#include "MadgwickAHRS.h"
 
+
+#define TIME 0x50
+#define ACCEL 0x51
+#define GYRO 0x52
+#define ANGLE 0x53
+#define MAGN 0x54
+
+struct vec3
+{
+    float x = 0.0;
+    float y = 0.0;
+    float z = 0.0;
+};
+
+struct rotation
+{
+    float pitch = 0.0;
+    float roll = 0.0;
+    float yaw = 0.0;
+};
 
 bool GyroManager::isRunning = false;
 bool GyroManager::setCenterView = false;
@@ -100,6 +121,9 @@ void *GyroManagerThread(void *arg)
 {
     KeyValueStore* preferences = KeyValueStore::Instance();
 
+    Madgwick madgwick;
+    madgwick.begin(50.0);
+
     unsigned char buf[80];
     float a[3];
     AngleSet lastAngle = {0.0, 0.0, 0.0};
@@ -109,14 +133,22 @@ void *GyroManagerThread(void *arg)
 
     float rollCurvature;
     float pitchCurvature;
-    float headingCurvature;
+    float yawCurvature;
 
     float roll;
     float pitch;
-    float heading;
+    float yaw;
+
+    struct vec3 accel;
+    struct vec3 gyro;
+    struct vec3 magn;
+
+    struct rotation raw;
+    struct rotation smoothed;
+    struct rotation extended;
 
     float filterLag;
-    
+
     try
     {
         string shAngle = preferences->getValue("targetHeadAngle");
@@ -130,11 +162,13 @@ void *GyroManagerThread(void *arg)
         rollCurvature = std::stof(srcurve);
         string spcurve = preferences->getValue("pitchCurvature");
         pitchCurvature = std::stof(spcurve);
-        string shcurve = preferences->getValue("headingCurvature");
-        headingCurvature = std::stof(shcurve);
+        string shcurve = preferences->getValue("yawCurvature");
+        yawCurvature = std::stof(shcurve);
 
         string slag = preferences->getValue("filterLag");
         filterLag = std::stof(slag);
+
+        GyroManager::setCenterView = true;
 
     } catch (const std::exception& ex)
     {
@@ -151,31 +185,48 @@ void *GyroManagerThread(void *arg)
             if (buf[0] == 0x55)
             {
                 rdlen = read(GyroManager::sfd, &buf[1], 10);
-                
-                if (buf[1] == 0x53) // this is the angles frame
+
+                if (buf[1] == GYRO)
                 {
+                    GyroManager::decode(buf, a);
+
+                    raw.roll += 0.02 * a[0];
+                    raw.pitch += 0.02 * a[1];
+                    raw.yaw += 0.02 * a[2];
+
                     try
                     {
-                        GyroManager::decode(buf, a);
-
-                        // normalize to the range -90, +90
-                        a[0] = GyroManager::normalizeAngle(a[0]);
-                        a[1] = GyroManager::normalizeAngle(a[1]);
-                        a[2] = GyroManager::normalizeAngle(a[2]);
-                        
-                        // apply smoothing
-                        float deltaA = a[0] - lastAngle.roll;
-                        lastAngle.roll = lastAngle.roll + deltaA / filterLag;
-                        deltaA = a[1] - lastAngle.pitch;
-                        lastAngle.pitch = lastAngle.pitch + deltaA / filterLag;
-                        deltaA = a[2] - lastAngle.heading;
-                        lastAngle.heading = lastAngle.heading + deltaA / filterLag;
+                        // get new center values if commanded
+                        if (GyroManager::setCenterView)
+                        {
+                            // zero the integrated raw angles to correct for drift
+                            raw.roll = 0.0;
+                            raw.pitch = 0.0;
+                            raw.yaw = 0.0;
+                            
+                            GyroManager::viewCenter.setAngles(raw.roll, raw.pitch, raw.yaw);
+                            GyroManager::setCenterView = false;
+                        }
 
                         // center the view point
                         AngleSet center = GyroManager::viewCenter.getAngleSet();
-                        roll = (lastAngle.roll - center.roll);
-                        pitch = (lastAngle.pitch - center.pitch);
-                        heading = (lastAngle.heading - center.heading);
+                        smoothed.roll = raw.roll - center.roll;
+                        smoothed.pitch = raw.pitch - center.pitch;
+                        smoothed.yaw = raw.yaw - center.yaw;
+                        //printf("roll: %4.3f pitch: %4.3f yaw: %4.3f\n", smoothed.roll, smoothed.pitch, smoothed.yaw);
+
+                        // apply smoothing
+                        float diff = smoothed.roll - lastAngle.roll;
+                        lastAngle.roll = lastAngle.roll + diff / filterLag;
+                        smoothed.roll = lastAngle.roll;
+                        
+                        diff = smoothed.pitch - lastAngle.pitch;
+                        lastAngle.pitch = lastAngle.pitch + diff / filterLag;
+                        smoothed.pitch = lastAngle.pitch;
+                        
+                        diff = smoothed.yaw - lastAngle.yaw;
+                        lastAngle.yaw = lastAngle.yaw + diff / filterLag;
+                        smoothed.yaw = lastAngle.yaw;
 
                     } catch (const std::exception& ex)
                     {
@@ -207,23 +258,23 @@ void *GyroManagerThread(void *arg)
                     //
                     try
                     {
-                        float e = logHeadAngle * headingCurvature - logViewAngle;
+                        float e = logHeadAngle * yawCurvature - logViewAngle;
                         float scale = pow(10.0, e);
-                        bool sign = signbit(heading);
-                        heading = std::pow(abs(heading), headingCurvature) / scale;
-                        heading = (sign ? heading : -heading);
+                        bool sign = signbit(smoothed.yaw);
+                        extended.yaw = std::pow(abs(smoothed.yaw), yawCurvature) / scale;
+                        extended.yaw = (sign ? extended.yaw : -extended.yaw);
 
                         e = logHeadAngle * pitchCurvature - logViewAngle;
                         scale = pow(10.0, e);
-                        sign = signbit(pitch);
-                        pitch = pow(abs(pitch), pitchCurvature) / scale;
-                        pitch = (sign ? pitch : -pitch);
+                        sign = signbit(smoothed.pitch);
+                        extended.pitch = pow(abs(smoothed.pitch), pitchCurvature) / scale;
+                        extended.pitch = (sign ? extended.pitch : -extended.pitch);
 
                         e = logHeadAngle * rollCurvature - logViewAngle;
                         scale = pow(10.0, e);
-                        sign = signbit(roll);
-                        roll = pow(abs(roll), rollCurvature) / scale;
-                        roll = (sign ? -roll : roll);
+                        sign = signbit(smoothed.roll);
+                        extended.roll = pow(abs(smoothed.roll), rollCurvature) / scale;
+                        extended.roll = (sign ? extended.roll : -extended.roll);
 
                     } catch (const std::exception& ex)
                     {
@@ -231,15 +282,9 @@ void *GyroManagerThread(void *arg)
                         XPilotViewUtils::logMessage(msg);
                     }
 
-                    // angles object will be shared with and read by XPlugin loop
-                    GyroManager::angles->setAngles(roll, pitch, heading);
-
-                    // get new center values on command
-                    if (GyroManager::setCenterView)
-                    {
-                        GyroManager::viewCenter.setAngles(a[0], a[1], a[2]);
-                        GyroManager::setCenterView = false;
-                    }
+                    // angles object will be shared with and read by the XPlugin loop
+                    //
+                    GyroManager::angles->setAngles(extended.roll, extended.pitch, extended.yaw);
                 }
             }
         }
@@ -252,13 +297,23 @@ float GyroManager::normalizeAngle(float a)
 {
     float result = a;
 
-    if (-180.0 < a && a < -90.0)
+    while (result < -180.0)
     {
-        result = a + 180.0;
-    } else if (90.0 < a && a < 180)
-    {
-        result = a - 180.0;
+        result += 180.0;
     }
+    while (180.0 < result)
+    {
+        result -= 180.0;
+    }
+
+    //    if (-180.0 < a && a < -90.0)
+    //    {
+    //        result = a + 180.0;
+    //    } else if (90.0 < a && a < 180)
+    //    {
+    //        result = a - 180.0;
+    //    }
+
     return result;
 }
 
@@ -352,20 +407,25 @@ void GyroManager::decode(unsigned char buf[], float result[])
     if (buf[0] == 0x55)
     {
         switch (buf [1]) {
-            case 0x51:
-                result[0] = (short(buf [3] << 8 | buf [2])) / 32768.0 * 16;
-                result[1] = (short(buf [5] << 8 | buf [4])) / 32768.0 * 16;
-                result[2] = (short(buf [7] << 8 | buf [6])) / 32768.0 * 16;
+            case ACCEL:
+                result[0] = (short(buf [3] << 8 | buf [2])) / 32768.0 * 16.0;
+                result[1] = (short(buf [5] << 8 | buf [4])) / 32768.0 * 16.0;
+                result[2] = (short(buf [7] << 8 | buf [6])) / 32768.0 * 16.0;
                 break;
-            case 0x52:
-                result[0] = (short(buf [3] << 8 | buf [2])) / 32768.0 * 2000;
-                result[1] = (short(buf [5] << 8 | buf [4])) / 32768.0 * 2000;
-                result[2] = (short(buf [7] << 8 | buf [6])) / 32768.0 * 2000;
+            case GYRO:
+                result[0] = (short(buf [3] << 8 | buf [2])) / 32768.0 * 2000.0;
+                result[1] = (short(buf [5] << 8 | buf [4])) / 32768.0 * 2000.0;
+                result[2] = (short(buf [7] << 8 | buf [6])) / 32768.0 * 2000.0;
                 break;
-            case 0x53:
-                result[0] = (short(buf [3] << 8 | buf [2])) / 32768.0 * 180;
-                result[1] = (short(buf [5] << 8 | buf [4])) / 32768.0 * 180;
-                result[2] = (short(buf [7] << 8 | buf [6])) / 32768.0 * 180;
+            case ANGLE:
+                result[0] = (short(buf [3] << 8 | buf [2])) / 32768.0 * 180.0;
+                result[1] = (short(buf [5] << 8 | buf [4])) / 32768.0 * 180.0;
+                result[2] = (short(buf [7] << 8 | buf [6])) / 32768.0 * 180.0;
+                break;
+            case MAGN:
+                result[0] = float(short(buf [3] << 8 | buf [2]));
+                result[1] = float(short(buf [5] << 8 | buf [4]));
+                result[2] = float(short(buf [7] << 8 | buf [6]));
                 break;
         }
     }
