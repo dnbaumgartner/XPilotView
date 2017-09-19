@@ -174,13 +174,11 @@ float FlightLoopCallback(
     // computed yaw and pitch channels such that varying the pitch will
     // induce a yaw change. So we rotate the sensor 90 degrees and use the 
     // computed yaw and roll values which have no interaction for the 
-    // commanded yaw and pitch.
+    // commanded yaw and pitch and fix the commanded roll to zero.
     //
     XPLMSetDataf(pilotsHeadPsi, angles.yaw);    // command yaw
     XPLMSetDataf(pilotsHeadThe, angles.roll);   // command pitch
     XPLMSetDataf(pilotsHeadPhi, 0.0);           // command roll
-    
-   // printf("yaw: %4.3f pitch: %4.3f roll: %4.3f\n", angles.yaw, angles.roll, angles.pitch);
 
     return LOOPTIME;
 }
