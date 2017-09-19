@@ -26,7 +26,6 @@
 
 #include "GyroManager.hpp"
 #include "XPilotViewUtils.hpp"
-#include "MadgwickAHRS.h"
 
 
 #define TIME 0x50
@@ -121,9 +120,6 @@ void *GyroManagerThread(void *arg)
 {
     KeyValueStore* preferences = KeyValueStore::Instance();
 
-    Madgwick madgwick;
-    madgwick.begin(50.0);
-
     unsigned char buf[80];
     float a[3];
     AngleSet lastAngle = {0.0, 0.0, 0.0};
@@ -148,31 +144,40 @@ void *GyroManagerThread(void *arg)
     struct rotation extended;
 
     float filterLag;
+    
+    float samplePeriod;
 
     try
     {
-        string shAngle = preferences->getValue("targetHeadAngle");
-        string svAngle = preferences->getValue("targetViewAngle");
-        float hAngle = std::stof(shAngle);
-        float vAngle = std::stof(svAngle);
+        // Initialize from the preferences
+        //
+        string s_hAngle = preferences->getValue("targetHeadAngle");
+        string s_vAngle = preferences->getValue("targetViewAngle");
+        float hAngle = std::stof(s_hAngle);
+        float vAngle = std::stof(s_vAngle);
         logHeadAngle = std::log10(hAngle);
         logViewAngle = std::log10(vAngle);
 
-        string srcurve = preferences->getValue("rollCurvature");
-        rollCurvature = std::stof(srcurve);
-        string spcurve = preferences->getValue("pitchCurvature");
-        pitchCurvature = std::stof(spcurve);
-        string shcurve = preferences->getValue("yawCurvature");
-        yawCurvature = std::stof(shcurve);
+        string s_rcurve = preferences->getValue("rollCurvature");
+        rollCurvature = std::stof(s_rcurve);
+        string s_pcurve = preferences->getValue("pitchCurvature");
+        pitchCurvature = std::stof(s_pcurve);
+        string s_hcurve = preferences->getValue("yawCurvature");
+        yawCurvature = std::stof(s_hcurve);
 
-        string slag = preferences->getValue("filterLag");
-        filterLag = std::stof(slag);
+        string s_lag = preferences->getValue("filterLag");
+        filterLag = std::stof(s_lag);
 
+        string s_samplePeriod = preferences->getValue("samplePeriod");
+        samplePeriod = std::stof(s_samplePeriod);
+        
+        // Force the view to be centered on the first pass of the update loop
+        //
         GyroManager::setCenterView = true;
 
     } catch (const std::exception& ex)
     {
-        std::string msg(std::string("XPilotView: GyroManager::GyroManagerThread():initializing curvatures : ") + ex.what());
+        std::string msg(std::string("XPilotView: GyroManager::GyroManagerThread():initializing preferences : ") + ex.what());
         XPilotViewUtils::logMessage(msg);
     }
 
@@ -190,9 +195,10 @@ void *GyroManagerThread(void *arg)
                 {
                     GyroManager::decode(buf, a);
 
-                    raw.roll += 0.02 * a[0];
-                    raw.pitch += 0.02 * a[1];
-                    raw.yaw += 0.02 * a[2];
+                    // simple integration of the rates give deflection angles
+                    raw.roll += samplePeriod * a[0];
+                    raw.pitch += samplePeriod * a[1];
+                    raw.yaw += samplePeriod * a[2];
 
                     try
                     {
@@ -208,13 +214,12 @@ void *GyroManagerThread(void *arg)
                             GyroManager::setCenterView = false;
                         }
 
-                        // center the view point
+                        // Adjust relative to the center view point
                         AngleSet center = GyroManager::viewCenter.getAngleSet();
                         smoothed.roll = raw.roll - center.roll;
                         smoothed.pitch = raw.pitch - center.pitch;
                         smoothed.yaw = raw.yaw - center.yaw;
-                        //printf("roll: %4.3f pitch: %4.3f yaw: %4.3f\n", smoothed.roll, smoothed.pitch, smoothed.yaw);
-
+                        
                         // apply smoothing
                         float diff = smoothed.roll - lastAngle.roll;
                         lastAngle.roll = lastAngle.roll + diff / filterLag;
@@ -232,6 +237,7 @@ void *GyroManagerThread(void *arg)
                     {
                         std::string msg(std::string("XPilotView: GyroManager::GyroManagerThread():processing angle values : ") + ex.what());
                         XPilotViewUtils::logMessage(msg);
+                        break;
                     }
 
                     // Apply exponential acceleration to the head angle
@@ -260,29 +266,27 @@ void *GyroManagerThread(void *arg)
                     {
                         float e = logHeadAngle * yawCurvature - logViewAngle;
                         float scale = pow(10.0, e);
-                        bool sign = signbit(smoothed.yaw);
                         extended.yaw = std::pow(abs(smoothed.yaw), yawCurvature) / scale;
-                        extended.yaw = (sign ? extended.yaw : -extended.yaw);
+                        extended.yaw = (signbit(smoothed.yaw) ? extended.yaw : -extended.yaw);
 
                         e = logHeadAngle * pitchCurvature - logViewAngle;
                         scale = pow(10.0, e);
-                        sign = signbit(smoothed.pitch);
                         extended.pitch = pow(abs(smoothed.pitch), pitchCurvature) / scale;
-                        extended.pitch = (sign ? extended.pitch : -extended.pitch);
+                        extended.pitch = (signbit(smoothed.pitch) ? extended.pitch : -extended.pitch);
 
                         e = logHeadAngle * rollCurvature - logViewAngle;
                         scale = pow(10.0, e);
-                        sign = signbit(smoothed.roll);
                         extended.roll = pow(abs(smoothed.roll), rollCurvature) / scale;
-                        extended.roll = (sign ? extended.roll : -extended.roll);
+                        extended.roll = (signbit(smoothed.roll) ? extended.roll : -extended.roll);
 
                     } catch (const std::exception& ex)
                     {
                         std::string msg(std::string("XPilotView: GyroManager::GyroManagerThread():applying curvature function : ") + ex.what());
                         XPilotViewUtils::logMessage(msg);
+                        break;
                     }
 
-                    // angles object will be shared with and read by the XPlugin loop
+                    // Update the shared angles object to be read by the XPlugin loop
                     //
                     GyroManager::angles->setAngles(extended.roll, extended.pitch, extended.yaw);
                 }
@@ -291,30 +295,6 @@ void *GyroManagerThread(void *arg)
     }
 
     GyroManager::isRunning = false;
-}
-
-float GyroManager::normalizeAngle(float a)
-{
-    float result = a;
-
-    while (result < -180.0)
-    {
-        result += 180.0;
-    }
-    while (180.0 < result)
-    {
-        result -= 180.0;
-    }
-
-    //    if (-180.0 < a && a < -90.0)
-    //    {
-    //        result = a + 180.0;
-    //    } else if (90.0 < a && a < 180)
-    //    {
-    //        result = a - 180.0;
-    //    }
-
-    return result;
 }
 
 void GyroManager::startManagerThread()

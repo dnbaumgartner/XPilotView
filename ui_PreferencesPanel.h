@@ -30,13 +30,13 @@ public:
     QWidget *centralwidget;
     QLabel *label;
     QLabel *label_2;
-    QLineEdit *headingScaleLineEdit;
-    QLineEdit *pitchScaleLineEdit;
+    QLineEdit *yawCurvatureLineEdit;
+    QLineEdit *pitchCurvatureLineEdit;
     QLabel *label_3;
     QLineEdit *ttyPathLineEdit;
     QPushButton *savePushButton;
     QLabel *label_5;
-    QLineEdit *rollScaleLineEdit;
+    QLineEdit *rollCurvatureLineEdit;
     QLabel *label_6;
     QLineEdit *filterLagLineEdit;
     QMenuBar *menubar;
@@ -65,14 +65,14 @@ public:
         label_2->setObjectName(QStringLiteral("label_2"));
         label_2->setGeometry(QRect(60, 90, 121, 20));
         label_2->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
-        headingScaleLineEdit = new QLineEdit(centralwidget);
-        headingScaleLineEdit->setObjectName(QStringLiteral("headingScaleLineEdit"));
-        headingScaleLineEdit->setGeometry(QRect(190, 50, 91, 27));
-        headingScaleLineEdit->setAlignment(Qt::AlignCenter);
-        pitchScaleLineEdit = new QLineEdit(centralwidget);
-        pitchScaleLineEdit->setObjectName(QStringLiteral("pitchScaleLineEdit"));
-        pitchScaleLineEdit->setGeometry(QRect(190, 90, 91, 27));
-        pitchScaleLineEdit->setAlignment(Qt::AlignCenter);
+        yawCurvatureLineEdit = new QLineEdit(centralwidget);
+        yawCurvatureLineEdit->setObjectName(QStringLiteral("yawCurvatureLineEdit"));
+        yawCurvatureLineEdit->setGeometry(QRect(190, 50, 91, 27));
+        yawCurvatureLineEdit->setAlignment(Qt::AlignCenter);
+        pitchCurvatureLineEdit = new QLineEdit(centralwidget);
+        pitchCurvatureLineEdit->setObjectName(QStringLiteral("pitchCurvatureLineEdit"));
+        pitchCurvatureLineEdit->setGeometry(QRect(190, 90, 91, 27));
+        pitchCurvatureLineEdit->setAlignment(Qt::AlignCenter);
         label_3 = new QLabel(centralwidget);
         label_3->setObjectName(QStringLiteral("label_3"));
         label_3->setGeometry(QRect(110, 10, 61, 20));
@@ -87,10 +87,10 @@ public:
         label_5->setObjectName(QStringLiteral("label_5"));
         label_5->setGeometry(QRect(60, 130, 121, 20));
         label_5->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
-        rollScaleLineEdit = new QLineEdit(centralwidget);
-        rollScaleLineEdit->setObjectName(QStringLiteral("rollScaleLineEdit"));
-        rollScaleLineEdit->setGeometry(QRect(190, 130, 91, 27));
-        rollScaleLineEdit->setAlignment(Qt::AlignCenter);
+        rollCurvatureLineEdit = new QLineEdit(centralwidget);
+        rollCurvatureLineEdit->setObjectName(QStringLiteral("rollCurvatureLineEdit"));
+        rollCurvatureLineEdit->setGeometry(QRect(190, 130, 91, 27));
+        rollCurvatureLineEdit->setAlignment(Qt::AlignCenter);
         label_6 = new QLabel(centralwidget);
         label_6->setObjectName(QStringLiteral("label_6"));
         label_6->setGeometry(QRect(60, 170, 121, 20));
@@ -116,15 +116,15 @@ public:
     void retranslateUi(QMainWindow *PreferencesPanel)
     {
         PreferencesPanel->setWindowTitle(QApplication::translate("PreferencesPanel", "PreferencesPanel", 0));
-        label->setText(QApplication::translate("PreferencesPanel", "Heading Curvature", 0));
+        label->setText(QApplication::translate("PreferencesPanel", "Yaw Curvature", 0));
         label_2->setText(QApplication::translate("PreferencesPanel", "Pitch Curvature", 0));
-        headingScaleLineEdit->setText(QApplication::translate("PreferencesPanel", "1.0", 0));
-        pitchScaleLineEdit->setText(QApplication::translate("PreferencesPanel", "1.0", 0));
+        yawCurvatureLineEdit->setText(QApplication::translate("PreferencesPanel", "1.0", 0));
+        pitchCurvatureLineEdit->setText(QApplication::translate("PreferencesPanel", "1.0", 0));
         label_3->setText(QApplication::translate("PreferencesPanel", "TTY Path", 0));
         ttyPathLineEdit->setText(QApplication::translate("PreferencesPanel", "/dev/ttyUSB0", 0));
         savePushButton->setText(QApplication::translate("PreferencesPanel", "Save", 0));
         label_5->setText(QApplication::translate("PreferencesPanel", "Roll Curvature", 0));
-        rollScaleLineEdit->setText(QApplication::translate("PreferencesPanel", "1.0", 0));
+        rollCurvatureLineEdit->setText(QApplication::translate("PreferencesPanel", "1.0", 0));
         label_6->setText(QApplication::translate("PreferencesPanel", "Smoothing", 0));
         filterLagLineEdit->setText(QApplication::translate("PreferencesPanel", "20.0", 0));
     } // retranslateUi

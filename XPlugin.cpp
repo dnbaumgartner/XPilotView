@@ -71,7 +71,7 @@ PLUGIN_API int XPluginStart(
 
     gyroAngles = gyroMgr.getAngles();
 
-    pilotsHeadPsi = XPLMFindDataRef("sim/graphics/view/pilots_head_psi"); // heading
+    pilotsHeadPsi = XPLMFindDataRef("sim/graphics/view/pilots_head_psi"); // yaw
     pilotsHeadThe = XPLMFindDataRef("sim/graphics/view/pilots_head_the"); // pitch
     pilotsHeadPhi = XPLMFindDataRef("sim/graphics/view/pilots_head_phi"); // roll
 
@@ -168,9 +168,19 @@ float FlightLoopCallback(
 {
     AngleSet angles = gyroAngles->getAngleSet();
 
-    XPLMSetDataf(pilotsHeadPsi, angles.heading);
-    XPLMSetDataf(pilotsHeadThe, angles.pitch);
-    XPLMSetDataf(pilotsHeadPhi, angles.roll);
+    // The sensor is mounted 90 degrees off the forward/aft center line so the 
+    // computed roll becomes the pitch. We'll set the commanded roll
+    // value to zero. We do this because there is cross talk between the
+    // computed yaw and pitch channels such that varying the pitch will
+    // induce a yaw change. So we rotate the sensor 90 degrees and use the 
+    // computed yaw and roll values which have no interaction for the 
+    // commanded yaw and pitch.
+    //
+    XPLMSetDataf(pilotsHeadPsi, angles.yaw);    // command yaw
+    XPLMSetDataf(pilotsHeadThe, angles.roll);   // command pitch
+    XPLMSetDataf(pilotsHeadPhi, 0.0);           // command roll
+    
+   // printf("yaw: %4.3f pitch: %4.3f roll: %4.3f\n", angles.yaw, angles.roll, angles.pitch);
 
     return LOOPTIME;
 }

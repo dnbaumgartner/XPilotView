@@ -32,26 +32,26 @@ struct AngleSet
 {
     float roll; 
     float pitch;
-    float heading;
+    float yaw;
 };
 
 class GyroAngles {
     float roll; 
     float pitch;
-    float heading;
+    float yaw;
 
 public:
     GyroAngles();
-    GyroAngles(float roll, float pitch, float heading);
+    GyroAngles(float roll, float pitch, float yaw);
     virtual ~GyroAngles();
     
-    void setAngles(float roll, float pitch, float heading);
-    void setAngles(double roll, double pitch, double heading);
+    void setAngles(float roll, float pitch, float yaw);
+    void setAngles(double roll, double pitch, double yaw);
     void setAngles(AngleSet);
     AngleSet getAngleSet();
     
 private:
-    AngleSet gangles;
+    
 };
 
 typedef std::shared_ptr<GyroAngles> GyroAnglesPtr;

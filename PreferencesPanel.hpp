@@ -53,9 +53,9 @@ public:
 
 private slots:
     void on_ttyPathLineEdit_editingFinished();
-    void on_rollScaleLineEdit_editingFinished();
-    void on_pitchScaleLineEdit_editingFinished();
-    void on_headingScaleLineEdit_editingFinished();
+    void on_rollCurvatureLineEdit_editingFinished();
+    void on_pitchCurvatureLineEdit_editingFinished();
+    void on_yawCurvatureLineEdit_editingFinished();
     void on_filterLagLineEdit_editingFinished();
     void on_savePushButton_clicked();
 

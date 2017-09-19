@@ -20,7 +20,7 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_PreferencesPanel_t {
     QByteArrayData data[8];
-    char stringdata0[231];
+    char stringdata0[239];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -32,17 +32,17 @@ static const qt_meta_stringdata_PreferencesPanel_t qt_meta_stringdata_Preference
 QT_MOC_LITERAL(0, 0, 16), // "PreferencesPanel"
 QT_MOC_LITERAL(1, 17, 34), // "on_ttyPathLineEdit_editingFin..."
 QT_MOC_LITERAL(2, 52, 0), // ""
-QT_MOC_LITERAL(3, 53, 36), // "on_rollScaleLineEdit_editingF..."
-QT_MOC_LITERAL(4, 90, 37), // "on_pitchScaleLineEdit_editing..."
-QT_MOC_LITERAL(5, 128, 39), // "on_headingScaleLineEdit_editi..."
-QT_MOC_LITERAL(6, 168, 36), // "on_filterLagLineEdit_editingF..."
-QT_MOC_LITERAL(7, 205, 25) // "on_savePushButton_clicked"
+QT_MOC_LITERAL(3, 53, 40), // "on_rollCurvatureLineEdit_edit..."
+QT_MOC_LITERAL(4, 94, 41), // "on_pitchCurvatureLineEdit_edi..."
+QT_MOC_LITERAL(5, 136, 39), // "on_yawCurvatureLineEdit_editi..."
+QT_MOC_LITERAL(6, 176, 36), // "on_filterLagLineEdit_editingF..."
+QT_MOC_LITERAL(7, 213, 25) // "on_savePushButton_clicked"
 
     },
     "PreferencesPanel\0on_ttyPathLineEdit_editingFinished\0"
-    "\0on_rollScaleLineEdit_editingFinished\0"
-    "on_pitchScaleLineEdit_editingFinished\0"
-    "on_headingScaleLineEdit_editingFinished\0"
+    "\0on_rollCurvatureLineEdit_editingFinished\0"
+    "on_pitchCurvatureLineEdit_editingFinished\0"
+    "on_yawCurvatureLineEdit_editingFinished\0"
     "on_filterLagLineEdit_editingFinished\0"
     "on_savePushButton_clicked"
 };
@@ -87,9 +87,9 @@ void PreferencesPanel::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int
         Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->on_ttyPathLineEdit_editingFinished(); break;
-        case 1: _t->on_rollScaleLineEdit_editingFinished(); break;
-        case 2: _t->on_pitchScaleLineEdit_editingFinished(); break;
-        case 3: _t->on_headingScaleLineEdit_editingFinished(); break;
+        case 1: _t->on_rollCurvatureLineEdit_editingFinished(); break;
+        case 2: _t->on_pitchCurvatureLineEdit_editingFinished(); break;
+        case 3: _t->on_yawCurvatureLineEdit_editingFinished(); break;
         case 4: _t->on_filterLagLineEdit_editingFinished(); break;
         case 5: _t->on_savePushButton_clicked(); break;
         default: ;

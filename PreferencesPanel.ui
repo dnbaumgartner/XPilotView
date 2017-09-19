@@ -45,7 +45,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Heading Curvature</string>
+     <string>Yaw Curvature</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -67,7 +67,7 @@
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="QLineEdit" name="headingScaleLineEdit">
+   <widget class="QLineEdit" name="yawCurvatureLineEdit">
     <property name="geometry">
      <rect>
       <x>190</x>
@@ -83,7 +83,7 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLineEdit" name="pitchScaleLineEdit">
+   <widget class="QLineEdit" name="pitchCurvatureLineEdit">
     <property name="geometry">
      <rect>
       <x>190</x>
@@ -157,7 +157,7 @@
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="QLineEdit" name="rollScaleLineEdit">
+   <widget class="QLineEdit" name="rollCurvatureLineEdit">
     <property name="geometry">
      <rect>
       <x>190</x>

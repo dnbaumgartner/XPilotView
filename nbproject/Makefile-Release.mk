@@ -41,6 +41,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/d2f23c52/XPilotViewUtils.o \
 	${OBJECTDIR}/_ext/d2f23c52/XPlugin.o \
 	${OBJECTDIR}/KeyValueStore.o \
+	${OBJECTDIR}/Madgwick.o \
 	${OBJECTDIR}/PreferencesPanel.o \
 	${OBJECTDIR}/moc_PreferencesPanel.o
 
@@ -98,6 +99,11 @@ ${OBJECTDIR}/KeyValueStore.o: KeyValueStore.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/KeyValueStore.o KeyValueStore.cpp
+
+${OBJECTDIR}/Madgwick.o: Madgwick.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Madgwick.o Madgwick.cpp
 
 ${OBJECTDIR}/PreferencesPanel.o: PreferencesPanel.cpp 
 	${MKDIR} -p ${OBJECTDIR}

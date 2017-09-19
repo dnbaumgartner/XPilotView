@@ -41,22 +41,22 @@ void PreferencesPanel::on_ttyPathLineEdit_editingFinished()
     preferences->setValue("ttyPath", lineEdit->text().toStdString());
 }
 
-void PreferencesPanel::on_rollScaleLineEdit_editingFinished()
+void PreferencesPanel::on_rollCurvatureLineEdit_editingFinished()
 {
-    QLineEdit* lineEdit = widget.rollScaleLineEdit;
+    QLineEdit* lineEdit = widget.rollCurvatureLineEdit;
     preferences->setValue("rollCurvature", lineEdit->text().toStdString());
 }
 
-void PreferencesPanel::on_pitchScaleLineEdit_editingFinished()
+void PreferencesPanel::on_pitchCurvatureLineEdit_editingFinished()
 {
-    QLineEdit* lineEdit = widget.pitchScaleLineEdit;
+    QLineEdit* lineEdit = widget.pitchCurvatureLineEdit;
     preferences->setValue("pitchCurvature", lineEdit->text().toStdString());
 }
 
-void PreferencesPanel::on_headingScaleLineEdit_editingFinished()
+void PreferencesPanel::on_yawCurvatureLineEdit_editingFinished()
 {
-    QLineEdit* lineEdit = widget.headingScaleLineEdit;
-    preferences->setValue("headingCurvature", lineEdit->text().toStdString());
+    QLineEdit* lineEdit = widget.yawCurvatureLineEdit;
+    preferences->setValue("yawCurvature", lineEdit->text().toStdString());
 }
 
 void PreferencesPanel::on_filterLagLineEdit_editingFinished()
@@ -74,11 +74,11 @@ void PreferencesPanel::updateUI()
 {
     QLineEdit* lineEdit = widget.ttyPathLineEdit;
     lineEdit->setText(QString::fromStdString(preferences->getValue("ttyPath")));
-    lineEdit = widget.headingScaleLineEdit;
-    lineEdit->setText(QString::fromStdString(preferences->getValue("headingCurvature")));
-    lineEdit = widget.pitchScaleLineEdit;
+    lineEdit = widget.yawCurvatureLineEdit;
+    lineEdit->setText(QString::fromStdString(preferences->getValue("yawCurvature")));
+    lineEdit = widget.pitchCurvatureLineEdit;
     lineEdit->setText(QString::fromStdString(preferences->getValue("pitchCurvature")));
-    lineEdit = widget.rollScaleLineEdit;
+    lineEdit = widget.rollCurvatureLineEdit;
     lineEdit->setText(QString::fromStdString(preferences->getValue("rollCurvature")));
     lineEdit = widget.filterLagLineEdit;
     lineEdit->setText(QString::fromStdString(preferences->getValue("filterLag")));

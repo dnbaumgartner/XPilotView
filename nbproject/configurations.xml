@@ -7,6 +7,7 @@
       <itemPath>/home/dave/NetBeansProjects/XPilotView/GyroAngles.hpp</itemPath>
       <itemPath>/home/dave/NetBeansProjects/XPilotView/GyroManager.hpp</itemPath>
       <itemPath>KeyValueStore.hpp</itemPath>
+      <itemPath>MadgwickAHRS.h</itemPath>
       <itemPath>/home/dave/NetBeansProjects/XPilotView/PreferencesManager.hpp</itemPath>
       <itemPath>/home/dave/NetBeansProjects/XPilotView/XPilotViewUtils.hpp</itemPath>
       <itemPath>XPlugin.hpp</itemPath>
@@ -22,6 +23,7 @@
       <itemPath>/home/dave/NetBeansProjects/XPilotView/GyroAngles.cpp</itemPath>
       <itemPath>/home/dave/NetBeansProjects/XPilotView/GyroManager.cpp</itemPath>
       <itemPath>KeyValueStore.cpp</itemPath>
+      <itemPath>Madgwick.cpp</itemPath>
       <itemPath>/home/dave/NetBeansProjects/XPilotView/PreferencesManager.cpp</itemPath>
       <itemPath>PreferencesPanel.cpp</itemPath>
       <itemPath>PreferencesPanel.hpp</itemPath>
@@ -153,6 +155,10 @@
       </item>
       <item path="KeyValueStore.hpp" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="Madgwick.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="MadgwickAHRS.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="PreferencesPanel.cpp" ex="false" tool="1" flavor2="0">
         <ccTool>
           <additionalDep>ui_PreferencesPanel.h</additionalDep>
@@ -264,6 +270,10 @@
       <item path="KeyValueStore.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="KeyValueStore.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Madgwick.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="MadgwickAHRS.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="PreferencesPanel.cpp" ex="false" tool="1" flavor2="0">
       </item>
