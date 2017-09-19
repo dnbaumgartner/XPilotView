@@ -37,7 +37,7 @@
 
 #include <QApplication>
 
-#include "../XPilotViewUI/PreferencesPanel.hpp"
+#include "PreferencesPanel.hpp"
 
 #include "XPilotViewUtils.hpp"
 #include "KeyValueStore.hpp"

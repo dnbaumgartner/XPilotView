@@ -35,7 +35,7 @@
 
 #include <Qt>
 #include "ui_PreferencesPanel.h"
-#include "../XPilotView/KeyValueStore.hpp"
+#include "KeyValueStore.hpp"
 
 using namespace std;
 using json = nlohmann::json;

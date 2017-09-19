@@ -81,7 +81,7 @@ ${OBJECTDIR}/_ext/d2f23c52/GyroAngles.o: /home/dave/NetBeansProjects/XPilotView/
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/d2f23c52/GyroAngles.o /home/dave/NetBeansProjects/XPilotView/GyroAngles.cpp
 
-${OBJECTDIR}/_ext/d2f23c52/GyroManager.o: /home/dave/NetBeansProjects/XPilotView/GyroManager.cpp 
+${OBJECTDIR}/_ext/d2f23c52/GyroManager.o: /home/dave/NetBeansProjects/XPilotView/GyroManager.cpp ui_PreferencesPanel.h
 	${MKDIR} -p ${OBJECTDIR}/_ext/d2f23c52
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/d2f23c52/GyroManager.o /home/dave/NetBeansProjects/XPilotView/GyroManager.cpp
@@ -116,11 +116,11 @@ ${OBJECTDIR}/PreferencesPanel.o: PreferencesPanel.cpp ui_PreferencesPanel.h
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PreferencesPanel.o PreferencesPanel.cpp
 
-moc_PreferencesPanel.cpp: PreferencesPanel.hpp 
+moc_PreferencesPanel.cpp: PreferencesPanel.hpp PreferencesPanel.hpp
 	@echo Performing Custom Build Step
 	/usr/lib/x86_64-linux-gnu/qt5/bin/moc -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include PreferencesPanel.hpp -o moc_PreferencesPanel.cpp
 
-ui_PreferencesPanel.h: PreferencesPanel.ui 
+ui_PreferencesPanel.h: PreferencesPanel.ui PreferencesPanel.ui
 	@echo Performing Custom Build Step
 	/usr/lib/x86_64-linux-gnu/qt5/bin/uic PreferencesPanel.ui -o ui_PreferencesPanel.h
 

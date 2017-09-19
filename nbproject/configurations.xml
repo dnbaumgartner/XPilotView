@@ -118,6 +118,9 @@
             ex="false"
             tool="1"
             flavor2="0">
+        <ccTool>
+          <additionalDep>ui_PreferencesPanel.h</additionalDep>
+        </ccTool>
       </item>
       <item path="/home/dave/NetBeansProjects/XPilotView/GyroManager.hpp"
             ex="false"
@@ -168,12 +171,14 @@
         <customTool>
           <customToolCommandline>/usr/lib/x86_64-linux-gnu/qt5/bin/moc -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include PreferencesPanel.hpp -o moc_PreferencesPanel.cpp</customToolCommandline>
           <customToolOutputs>moc_PreferencesPanel.cpp</customToolOutputs>
+          <customToolAdditionalDep>PreferencesPanel.hpp</customToolAdditionalDep>
         </customTool>
       </item>
       <item path="PreferencesPanel.ui" ex="false" tool="3" flavor2="0">
         <customTool>
           <customToolCommandline>/usr/lib/x86_64-linux-gnu/qt5/bin/uic PreferencesPanel.ui -o ui_PreferencesPanel.h</customToolCommandline>
           <customToolOutputs>ui_PreferencesPanel.h</customToolOutputs>
+          <customToolAdditionalDep>PreferencesPanel.ui</customToolAdditionalDep>
         </customTool>
       </item>
       <item path="XPlugin.hpp" ex="false" tool="3" flavor2="0">
