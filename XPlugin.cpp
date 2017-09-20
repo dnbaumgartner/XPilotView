@@ -177,8 +177,8 @@ float FlightLoopCallback(
     // commanded yaw and pitch and fix the commanded roll to zero.
     //
     XPLMSetDataf(pilotsHeadPsi, angles.yaw);    // command yaw
-    XPLMSetDataf(pilotsHeadThe, angles.roll);   // command pitch
-    XPLMSetDataf(pilotsHeadPhi, 0.0);           // command roll
+    XPLMSetDataf(pilotsHeadThe, angles.pitch);   // command pitch
+    XPLMSetDataf(pilotsHeadPhi, angles.roll);           // command roll
 
     return LOOPTIME;
 }
