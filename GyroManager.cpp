@@ -202,7 +202,7 @@ void *GyroManagerThread(void *arg)
 
                     try
                     {
-                        // get new center values if commanded
+                        // set the center null position to zero
                         if (GyroManager::setCenterView)
                         {
                             // zero the integrated raw angles to correct for drift
@@ -288,7 +288,17 @@ void *GyroManagerThread(void *arg)
 
                     // Update the shared angles object to be read by the XPlugin loop
                     //
-                    GyroManager::angles->setAngles(extended.roll, extended.pitch, extended.yaw);
+                    // Update the shared angles object to be read by the XPlugin loop
+                    //
+                    // The sensor is mounted 90 degrees off the forward/aft center line so the 
+                    // computed roll becomes the pitch. We'll set the commanded roll
+                    // value to zero. We do this because there is cross talk between the
+                    // computed yaw and pitch channels such that varying the pitch will
+                    // induce a yaw change. So we rotate the sensor 90 degrees and use the 
+                    // computed yaw and roll values for the commanded yaw and pitch and fix 
+                    // the commanded roll to zero.
+                    //
+                    GyroManager::angles->setAngles(float(0.0), extended.roll, extended.yaw);
                 }
             }
         }
