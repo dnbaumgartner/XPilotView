@@ -17,6 +17,8 @@ The code base is configured for NetBeans IDE 18.1 with the C/C++ plugin. The Mak
 
 The compiler base is the GNU Compiler Collection version 5.4.0.
 
+Qt application development framework, version 5.5.
+
 ### Additional Software
 
 The 64-bit [X-Plane SDK 2.1.3](http://www.xsquawkbox.net/xpsdk/mediawiki/Main_Page). 
