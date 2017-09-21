@@ -65,7 +65,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 This project is licensed under the GNU General Public License Version 3 or later.
 
-See the [LICENSE.md](LICENSE.md) file for details
+See the [COPYING](COPYING) file for details
 
 ## Acknowledgments
 
