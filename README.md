@@ -1,6 +1,6 @@
 # XPilotView
 
-An MEMS Gyroscope based head tracker for X-Plane 11. 
+A MEMS Gyroscope based head tracker for X-Plane 11. 
 
 This head tracker is yet another variation on the utility of controlling the pilots view in the X-Plane simulator window by moving the sim pilots head in desired orientations. Other head trackers have been developed using infrared emitters and reflectors on the pilots head which are then tracked with an infrared web cam and associated software drivers. Other head trackers use some variation of image recognition to track head movements and orientations which are translated into sim view commands.
 
