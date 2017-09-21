@@ -45,6 +45,17 @@ The 64-bit [X-Plane SDK 2.1.3](http://www.xsquawkbox.net/xpsdk/mediawiki/Main_Pa
 
 ## Software Design
 
+The major components of the design are the following classes:
+* XPlugin:
+* GyroManager:
+* PreferencesManager:
+* PreferencesPanel:
+
+Helper classes are:
+* GyroAngles:
+* KeyValueStore:
+* XPilotViewUtils:
+
 QT 5 in a pthread isolates the GUI from the X-Plane runtime system.
 
 ## Deployment
