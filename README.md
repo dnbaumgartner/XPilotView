@@ -27,7 +27,7 @@ The 64-bit [X-Plane SDK 2.1.3](http://www.xsquawkbox.net/xpsdk/mediawiki/Main_Pa
 
 [BWT901 MPU6050 Accelerometer Gyroscope](https://www.amazon.com/gp/product/B018NNAZW8/ref=oh_aui_detailpage_o02_s00?ie=UTF8&psc=1)
 
-![](/images/JY901Gyro.jpg)
+<img src="https://github.com/dnbaumgartner/XPilotView/blob/master/images/JY901Gyro.jpg" width="400" height="400">
 
 ### USB Interface
 
