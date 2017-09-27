@@ -1,4 +1,4 @@
-# XPilotView
+# XPilotView (DRAFT)
 
 A MEMS Gyroscope based head tracker for X-Plane 11. 
 
