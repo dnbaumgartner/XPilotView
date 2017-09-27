@@ -6,6 +6,10 @@ This head tracker is yet another variation on the utility of controlling the pil
 
 Previous implementations of gyroscope-based head tracking have generally used smart phone internal gyros as the sensor. The MEMS gyroscope used in this project has made low cost gyro head tracking possible.
 
+## Supported platforms
+
+XPilotView is developed for Linux 64-bit systems only. See the Development Environment section for the specific OS and library versions. There are no plans for creating an iOS or Windows version.
+
 ## Deployment
 
 The built plugin is stored as dist/Debug/XPilotView/64/lin.xpl. Copy the XPilotView/64/lin.xpl directory tree into the X-Plane resources/plugins folder. In addition, a tarball of the current release is available in dist/XPilotView.1.0.0.tar.gz. Simple unpack the tarball into the resources/plugins folder.
