@@ -6,21 +6,61 @@ This head tracker is yet another variation on the utility of controlling the pil
 
 Previous implementations of gyroscope-based head tracking have generally used smart phone internal gyros as the sensor. The MEMS gyroscope used in this project has made low cost gyro head tracking possible.
 
+The small size (thumbnail) of the MEMS gyroscope allows to mount the device on the pilots head in such a way to capture the yaw and pitch motions. One mounting method is to fasten (tape?) the MEMS device to the inside top of a cap which then is worn on the pilots head.
+
 ## Supported platforms
 
 XPilotView is developed for Linux 64-bit systems only. See the Development Environment section for the specific OS and library versions. There are no plans for creating an iOS or Windows version.
 
 ## Deployment
 
-The built plugin is stored as dist/Debug/XPilotView/64/lin.xpl. Copy the XPilotView/64/lin.xpl directory tree into the X-Plane resources/plugins folder. In addition, a tarball of the current release is available in dist/XPilotView.1.0.0.tar.gz. Simple unpack the tarball into the resources/plugins folder.
+The built plugin is stored as dist/Debug/XPilotView/64/lin.xpl. 
+
+Copy the XPilotView/64/lin.xpl directory tree into the X-Plane resources/plugins folder. 
+
+In addition, a tarball of the current release is available in dist/XPilotView.1.0.0.tar.gz. Simple unpack the tarball into the resources/plugins folder.
 
 ## Operation
 
 ### Configuring the Gyro
 
+The user manual, setup guide, Android app .apk and other (Windows, ARM) app versions can be found at:
+https://drive.google.com/file/d/0B8PmY6nhQadKLWdxN2VNY1E1OWc/view
+
+Other useful information can be found in the Amazon questions section:
+https://www.amazon.com/MPU6050-Bluetooth-Accelerometer-Gyroscope-Four-rotor/dp/B018NNAZW8#Ask
+
+The following instructions are for the Android app. Other platform version have not been tried.
+
+1) Install the MiniIMUEn.apk in your Android phone. 
+1) Plug the USB connector into the host computer.
+1) Connect the app with the gyro. This app will communicate with the JY-901 gyro over Bluetooth.
+1) Here are the settings for the Config panel:
+   * Module Type: JY-901Serial
+   * Output Content: Gyro
+   * Output Rate: 50Hz
+1) Switching to the Data panel and selecting Gyro, you should see Axis data change as you tilt the gyro about the three axis.
+1) This setup need only to be done once as the settings are stored on the gyro. However, it is interesting to play with other settings and data channels to see the effect of manipulating the gyro.
+ 
+
 ### Gyro Sensor Installation
 
+As mentioned previously, this developer mounted the gyro module on the inside top of a hat.
+
+The orientation of the gyro is critical. Please note the photo of the gyro module in the following Parts List section.
+ * The side of the module shown in the picture will be oriented as the bottom side next to the head. The Bluetooth antenna side will be on the top next to the cap.
+ * The gyro module should be rotated so that the X-Axis (Roll) arrow in the photo should be pointing to the left side of the head.
+ * The gyro connector side should be on the right.
+
+This particular orientation is so because we're using the Roll axis to measure the head pitch instead of the Pitch axis. The Pitch axis has some not well understood interaction with the Yaw axis that we can ignore if we use the Roll axis instead.
+
+The connector pins on the gyro module are inconvenient because they protrude at right angles to the module board and conflict with the head space inside the cap. This developer soldered new pins that extend to the side and clipped off the original pins.
+
+Once the device and software are working correctly, the gyro and USB modules can be protected with shrink tubing from your local Frys Electronics.
+
 ### X-Plane Setup
+
+### XPilotView Settings
 
 ## Parts List
 
@@ -64,7 +104,7 @@ Qt application development framework, version 5.5.
 The 64-bit [X-Plane SDK 2.1.3](http://www.xsquawkbox.net/xpsdk/mediawiki/Main_Page). 
 
 ## Software Design
-The main theme of the software design is to execute all functions of the plugin in isolation from the X-Plane runtime threading system. The principle function of the XPlugin is simply to asyncronously fetch computed view angles and write the same to the appropriate X-Plane variables. All GUI operations are performed by threaded QtApplication classes and all interactions with the gyro device and subsequent computations execute in the context of a dedicated thread.
+The main theme of the software design is to execute all functions of the plugin in isolation from the X-Plane runtime threading system in order to minimize any perturbations of the X-Plane cycle time. The principle function of the XPlugin module is then to simply and asyncronously fetch computed view angles and write the same to the appropriate X-Plane variables. All GUI operations are performed by threaded QtApplication classes and all interactions with the gyro device and subsequent computations execute in the context of a dedicated thread independent of the X-Plane runtime.
 
 The major components of the design are the following classes:
 * XPlugin:
