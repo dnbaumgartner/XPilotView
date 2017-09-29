@@ -49,7 +49,7 @@ struct rotation
 };
 
 bool GyroManager::isRunning = false;
-bool GyroManager::setCenterView = false;
+bool GyroManager::resetCenterView = false;
 unsigned int GyroManager::sfd;
 GyroAngles GyroManager::viewCenter(0.0, 0.0, 0.0);
 GyroAnglesPtr GyroManager::angles = std::make_shared<GyroAngles>(0.0, 0.0, 0.0);
@@ -113,7 +113,7 @@ void GyroManager::togglePreferencesPanel()
 
 void GyroManager::setViewCenter()
 {
-    setCenterView = true;
+    resetCenterView = true;
 }
 
 void *GyroManagerThread(void *arg)
@@ -121,7 +121,7 @@ void *GyroManagerThread(void *arg)
     KeyValueStore* preferences = KeyValueStore::Instance();
 
     unsigned char buf[80];
-    float a[3];
+    float rawrate[3];
     AngleSet lastAngle = {0.0, 0.0, 0.0};
 
     float logHeadAngle;
@@ -130,14 +130,6 @@ void *GyroManagerThread(void *arg)
     float rollCurvature;
     float pitchCurvature;
     float yawCurvature;
-
-    float roll;
-    float pitch;
-    float yaw;
-
-    struct vec3 accel;
-    struct vec3 gyro;
-    struct vec3 magn;
 
     struct rotation raw;
     struct rotation smoothed;
@@ -151,29 +143,22 @@ void *GyroManagerThread(void *arg)
     {
         // Initialize from the preferences
         //
-        string s_hAngle = preferences->getValue("targetHeadAngle");
-        string s_vAngle = preferences->getValue("targetViewAngle");
-        float hAngle = std::stof(s_hAngle);
-        float vAngle = std::stof(s_vAngle);
-        logHeadAngle = std::log10(hAngle);
-        logViewAngle = std::log10(vAngle);
+        float headAngle = std::stof( preferences->getValue("targetHeadAngle") );
+        float viewAngle = std::stof( preferences->getValue("targetViewAngle") );
+        logHeadAngle = std::log10(headAngle);
+        logViewAngle = std::log10(viewAngle);
 
-        string s_rcurve = preferences->getValue("rollCurvature");
-        rollCurvature = std::stof(s_rcurve);
-        string s_pcurve = preferences->getValue("pitchCurvature");
-        pitchCurvature = std::stof(s_pcurve);
-        string s_hcurve = preferences->getValue("yawCurvature");
-        yawCurvature = std::stof(s_hcurve);
+        rollCurvature = std::stof( preferences->getValue("rollCurvature") );
+        pitchCurvature = std::stof( preferences->getValue("pitchCurvature") );
+        yawCurvature = std::stof( preferences->getValue("yawCurvature")  );
 
-        string s_lag = preferences->getValue("filterLag");
-        filterLag = std::stof(s_lag);
+        filterLag = std::stof( preferences->getValue("filterLag") );
 
-        string s_samplePeriod = preferences->getValue("samplePeriod");
-        samplePeriod = std::stof(s_samplePeriod);
+        samplePeriod = std::stof( preferences->getValue("samplePeriod") );
         
         // Force the view to be centered on the first pass of the update loop
         //
-        GyroManager::setCenterView = true;
+        GyroManager::resetCenterView = true;
 
     } catch (const std::exception& ex)
     {
@@ -193,17 +178,17 @@ void *GyroManagerThread(void *arg)
 
                 if (buf[1] == GYRO)
                 {
-                    GyroManager::decode(buf, a);
+                    GyroManager::decode(buf, rawrate);
 
                     // simple integration of the rates give deflection angles
-                    raw.roll += samplePeriod * a[0];
-                    raw.pitch += samplePeriod * a[1];
-                    raw.yaw += samplePeriod * a[2];
+                    raw.roll += samplePeriod * rawrate[0];
+                    raw.pitch += samplePeriod * rawrate[1];
+                    raw.yaw += samplePeriod * rawrate[2];
 
                     try
                     {
                         // set the center null position to zero
-                        if (GyroManager::setCenterView)
+                        if (GyroManager::resetCenterView)
                         {
                             // zero the integrated raw angles to correct for drift
                             raw.roll = 0.0;
@@ -211,27 +196,27 @@ void *GyroManagerThread(void *arg)
                             raw.yaw = 0.0;
                             
                             GyroManager::viewCenter.setAngles(raw.roll, raw.pitch, raw.yaw);
-                            GyroManager::setCenterView = false;
+                            GyroManager::resetCenterView = false;
                         }
 
-                        // Adjust relative to the center view point
-                        AngleSet center = GyroManager::viewCenter.getAngleSet();
-                        smoothed.roll = raw.roll - center.roll;
-                        smoothed.pitch = raw.pitch - center.pitch;
-                        smoothed.yaw = raw.yaw - center.yaw;
+                        // Translate to the center view point
+                        AngleSet centeredAngles = GyroManager::viewCenter.getAngleSet();
+                        smoothed.roll = raw.roll - centeredAngles.roll;
+                        smoothed.pitch = raw.pitch - centeredAngles.pitch;
+                        smoothed.yaw = raw.yaw - centeredAngles.yaw;
                         
                         // apply smoothing
                         float diff = smoothed.roll - lastAngle.roll;
-                        lastAngle.roll = lastAngle.roll + diff / filterLag;
-                        smoothed.roll = lastAngle.roll;
+                        smoothed.roll = lastAngle.roll + diff / filterLag;
+                        lastAngle.roll = smoothed.roll;
                         
                         diff = smoothed.pitch - lastAngle.pitch;
-                        lastAngle.pitch = lastAngle.pitch + diff / filterLag;
-                        smoothed.pitch = lastAngle.pitch;
+                        smoothed.pitch = lastAngle.pitch + diff / filterLag;
+                        lastAngle.pitch = smoothed.pitch;
                         
                         diff = smoothed.yaw - lastAngle.yaw;
-                        lastAngle.yaw = lastAngle.yaw + diff / filterLag;
-                        smoothed.yaw = lastAngle.yaw;
+                        smoothed.yaw = lastAngle.yaw + diff / filterLag;
+                        lastAngle.yaw = smoothed.yaw;
 
                     } catch (const std::exception& ex)
                     {
@@ -288,8 +273,6 @@ void *GyroManagerThread(void *arg)
 
                     // Update the shared angles object to be read by the XPlugin loop
                     //
-                    // Update the shared angles object to be read by the XPlugin loop
-                    //
                     // The sensor is mounted 90 degrees off the forward/aft center line so the 
                     // computed roll becomes the pitch. We'll set the commanded roll
                     // value to zero. We do this because there is cross talk between the
@@ -313,7 +296,6 @@ void GyroManager::startManagerThread()
     {
         std::string ttypath = KeyValueStore::Instance()->getValue("ttyPath");
         sfd = this->opentty(ttypath);
-        this->initGyro();
 
         pthread_t gmthread;
         int ret = 0;
@@ -365,31 +347,6 @@ unsigned int GyroManager::opentty(std::string ttypath)
     }
 
     return sfd;
-}
-
-void GyroManager::initGyro()
-{
-    unsigned char cmdBaud115200[] = {0xff, 0xaa, 0x04, 0x06, 0x00};
-    unsigned char cmdRate100[] = {0xff, 0xaa, 0x03, 0x09, 0x00};
-    unsigned char cmdSave[] = {0xff, 0xaa, 0x00, 0x00, 0x00};
-
-    try
-    {
-        int wrlen = write(sfd, cmdBaud115200, sizeof (cmdBaud115200));
-        if (wrlen != sizeof (cmdBaud115200))
-            throw runtime_error("write cmdBaud115200 failed: " + std::to_string(errno));
-        wrlen = write(sfd, cmdRate100, sizeof (cmdRate100));
-        if (wrlen != sizeof (cmdRate100))
-            throw runtime_error("write cmdRate100 failed: " + std::to_string(errno));
-        wrlen = write(sfd, cmdSave, sizeof (cmdSave));
-        if (wrlen != sizeof (cmdSave))
-            throw runtime_error("write cmdSave failed: " + std::to_string(errno));
-
-    } catch (const std::exception& ex)
-    {
-        std::string msg(std::string("XPilotView: GyroManager::initGyro() : ") + ex.what());
-        XPilotViewUtils::logMessage(msg);
-    }
 }
 
 void GyroManager::decode(unsigned char buf[], float result[])

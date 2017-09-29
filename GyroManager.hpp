@@ -58,7 +58,7 @@ public:
     static void decode(unsigned char buf[], float result[]);
     
     static bool isRunning;
-    static bool setCenterView;
+    static bool resetCenterView;
     static unsigned int sfd;
     static GyroAngles viewCenter;
     static GyroAnglesPtr angles;

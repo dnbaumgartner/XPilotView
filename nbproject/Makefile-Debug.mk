@@ -41,7 +41,6 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/d2f23c52/XPilotViewUtils.o \
 	${OBJECTDIR}/_ext/d2f23c52/XPlugin.o \
 	${OBJECTDIR}/KeyValueStore.o \
-	${OBJECTDIR}/Madgwick.o \
 	${OBJECTDIR}/PreferencesPanel.o \
 	${OBJECTDIR}/moc_PreferencesPanel.o
 
@@ -105,11 +104,6 @@ ${OBJECTDIR}/KeyValueStore.o: KeyValueStore.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/KeyValueStore.o KeyValueStore.cpp
-
-${OBJECTDIR}/Madgwick.o: Madgwick.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DAPL=0 -DIBM=0 -DLIN=1 -DXPLM200=1 -DXPLM210=1 -I./SDK/CHeaders/XPLM -I./SDK/CHeaders/Widgets -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Madgwick.o Madgwick.cpp
 
 ${OBJECTDIR}/PreferencesPanel.o: PreferencesPanel.cpp ui_PreferencesPanel.h
 	${MKDIR} -p ${OBJECTDIR}
