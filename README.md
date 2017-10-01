@@ -32,7 +32,7 @@ https://www.amazon.com/MPU6050-Bluetooth-Accelerometer-Gyroscope-Four-rotor/dp/B
 
 The following instructions are for the Android app. Other platform version have not been tried.
 
-1) Install the MiniIMUEn.apk in your Android phone. 
+1) Install the MiniIMUEn.apk in your Android phone. This app will be listed in your app matrix as "Billiard".
 1) Plug the USB connector into the host computer.
 1) Connect the app with the gyro. This app will communicate with the JY-901 gyro over Bluetooth.
 1) Here are the settings for the Config panel:
@@ -41,7 +41,22 @@ The following instructions are for the Android app. Other platform version have 
    * Output Rate: 50Hz
 1) Switching to the Data panel and selecting Gyro, you should see Axis data change as you tilt the gyro about the three axis.
 1) This setup need only to be done once as the settings are stored on the gyro. However, it is interesting to play with other settings and data channels to see the effect of manipulating the gyro.
- 
+
+### Calibrating the Gyro
+
+The gyro occasionaly develops an offset in one of the rate axis. This is indicated when the view drifts while your head is held in a fixed position. Clicking the zeroing button temporarily returns the view to the center position but drifts off again. 
+
+The gyro should be recalibrated by the following steps:
+
+1) Connect the Billiard app (MiniIMUEn.apk) to the gyro.
+1) Select the Config display.
+1) Set the gyro module on a stationary surface in an orientation similar to the operating orientation.
+1) Touch the "Gyro Calibrate" bar in the Config display.
+1) Select 'OK' to calibrate.
+1) Wait for a stable display on all three axis. The numbers may jitter by a few tenths or hundredths which is ok.
+1) Touch the "OK" bar in the Config display.
+1) The gyro offset and view drift should be gone.
+1) If the drift persists then there may be a fault in the gyro. I have never observed an offset that could not be corrected with calibration.
 
 ### Gyro Sensor Installation
 
