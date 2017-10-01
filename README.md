@@ -22,9 +22,19 @@ In addition, a tarball of the current release is available in dist/XPilotView.1.
 
 ## Operation
 
-Overview of XPilotView functionality goals. Only head yaw and pitch motions in this release. 
+The functionality goals of this version of XPilotView are:
+  * Provide reliable, accurate head tracking input to X-Plane with minimal external gear.
+  * Capture yaw and pitch angular head motions as input. Xyz head displacements are not computed.
+  * Provide a quick enable/disable control input via a joystick/keyboard button.
+  * Provide a view recentering action via a joystick/keyboard button.
+  * Provide a gyro rate offset calibration via the XPilotView menu in X-Plane.
+  * Implement a low sensitivity zone around the view center point with increasing sensitivity away from the center point.
 
-Curvature explanation. Required stable centered view for focused flight operations (approaches, landings). Implement nonlinear transfer function mapping head position to view position such that the transfer function has a low gain in the region surrounding the centered view position and an accelerating gain as head moves further away from the centered position.
+The low sensitivity zone requires an explanation. It was found with early versions of this software that the gyro was very sensitive and given a linear response to head movements, the view would move around in response to slight head movements. This proved to be distracting during focused periods of flight such as landing, maneuvering and instrument scans. The solution was to implement a nonlinear transfer function mapping the head position to view position such that the transfer function has a low gain in the region surrounding the centered view position and an accelerating gain as head moves further away from the centered position.
+
+### Connecting the Gyro
+
+The gyro module is connected to the USB serial adapter via a flat cable and connector pins as listed in the **Parts List** section. When the gyro module and USB adapter are wired correctly per the user manual, the module receives power from the 5 volt pinout of the USB serial convertor. Since the gyro performs a self-calibration on power up, it is important that the **module should be kept stationary on a stable surface during the short powerup sequence (a few seconds)**. If the gyro experiences any motion or vibration during this phase, the gyro make be calibrated with an offset in one or more of the rate axis. 
 
 ### Configuring the Gyro
 
@@ -43,14 +53,14 @@ The following instructions are for the Android app. Other platform version have 
    * Module Type: JY-901Serial
    * Output Content: Gyro
    * Output Rate: 50Hz
-1) Switching to the Data panel and selecting Gyro, you should see Axis data change as you tilt the gyro about the three axis.
+1) Switching to the Data panel and selecting Gyro, you should see the axis data change as you tilt the gyro about the three axis.
 1) This setup need only to be done once as the settings are stored on the gyro. However, it is interesting to play with other settings and data channels to see the effect of manipulating the gyro.
 
 ### Calibrating the Gyro
 
-The gyro occasionally develops an offset in one of the rate axis. This is indicated when the view drifts while your head is held in a fixed position. Clicking the zeroing button temporarily returns the view to the center position but drifts off again. 
+The gyro occasionally develops an offset in one of the rate axis. This is indicated when the centerpoint of the view drifts while your head is held in a fixed position. Clicking the zeroing button will temporarily return the view to the center position but drifts off again. 
 
-The gyro should be recalibrated either from the X-Plane XPilotView menu setting as described in the following 'XPilotView Settings' section or by the following steps using the Android Billiard (MiniIMUEn) app:
+The gyro offset can be recalibrated either from the X-Plane XPilotView menu setting as described in the following **XPilotView Settings** section or by the following steps using the Android Billiard (MiniIMUEn) app:
 
 1) Connect the Billiard app (MiniIMUEn.apk) to the gyro.
 1) Select the Config display.
@@ -59,19 +69,19 @@ The gyro should be recalibrated either from the X-Plane XPilotView menu setting 
 1) Select 'OK' to calibrate.
 1) Wait for a stable display on all three axis. The numbers may jitter by a few tenths or hundredths which is ok.
 1) Touch the "OK" bar in the Config display.
-1) The gyro offset and view drift should be gone.
+1) The gyro offset will be saved and the drifting of the viewpoint should be gone.
 1) If the drift persists then there may be a fault in the gyro. I have never observed an offset that could not be corrected with calibration.
 
 ### Gyro Sensor Installation
 
-As mentioned previously, this developer mounted the gyro module on the inside top of a hat.
+As mentioned previously, this developer mounted the gyro module on the inside top of a cap.
 
 The orientation of the gyro is critical. Please note the photo of the gyro module in the following Parts List section.
- * The side of the module shown in the picture will be oriented as the bottom side next to the head. The Bluetooth antenna side will be on the top next to the cap.
+ * The side of the module shown in the picture will be oriented as the bottom side next to the head. The Bluetooth antenna side will be on the top next to the inside of the cap.
  * The gyro module should be rotated so that the X-Axis (Roll) arrow in the photo should be pointing to the left side of the head.
  * The gyro connector side should be on the right.
 
-This particular orientation is so because we're using the Roll axis to measure the head pitch instead of the Pitch axis. The Pitch axis has some not well understood interaction with the Yaw axis that we can ignore if we use the Roll axis instead.
+This particular orientation is so because we're using the Roll axis to measure the head pitch instead of the Pitch axis. The Pitch axis has some not well understood interaction with the Yaw axis that we can ignore if we use the Roll axis for head pitch instead.
 
 The connector pins on the gyro module are inconvenient because they protrude at right angles to the module board and conflict with the head space inside the cap. This developer soldered new pins that extend to the side and clipped off the original pins.
 
@@ -79,18 +89,49 @@ Once the device and software are working correctly, the gyro and USB modules can
 
 ### X-Plane Setup
 
-XPilotView menu options.
+If the XPilotView plugin is loaded correctly by X-Plane, an XPilotView menu entry will appear in the Plugin menu selection of the X-Plane menu bar.
 
-Binding XPilotView commands to joystick buttons.
-
+There are two XPilotView/X-Plane variables that are convenient to bind to joystick or keyboard buttons:
+```text
+XPilotView/
+    View/
+        Set current view as view center
+        StartStop view head tracking
+```
+I use a Microsoft Sidewinder Precision Pro joystick and it is useful to bind button 1 to the **Set current view as view center** and button 8 to **StartStop view head tracking**. I have found that while head tracking is in effect, it is common to set the view center several times as your head position adjusts to accomodate flight activity. Also, it is convenient to have the tracking start/stop available on the joy stick base within easy reach.
 
 ### XPilotView Settings
 
-Preferences selection panel for subset of preference variables.
+The XPilotView menu will have two selections: **Preferences** and **Calibrate Gyro**.
 
-Location of preferences file.
+The menu **Calibrate Gyro** selection will force a recalibration of the gyro rate offset values. This recalibration will take approximately three seconds. As with any calibration event, it is necessary that the gyro be placed securely on a stable surface. Having the gyro fixed to your head and keeping your head still during the calibration is not enough and will almost guarantee an offset drift.
 
-Explanation of each preference variable.
+The menu **Preferences** selection will present a Preferences Panel for changing some preference values:
+  * TTY Path - The serial tty port assigned to the USB serial adapter.
+  * Yaw Curvature - Determines the degree of the yaw null zone around the view center. Reasonable values to use are 1.2 to 1.9.
+  * Pitch Curvature - Determines the degree of the pitch null zone around the view center.
+  * Roll Curvature - Not used at this time.
+  * Smoothing - Roughly represents the number of gyro measurements to average over. Higher values for very smooth but slower response time, lower values for more responsive behavior but possibly more jitter.
+
+A default preferences configuration file will be created when the plugin is initialized by X-Plane for the first time. The location of this file is in the X-Plane directory as: 
+
+**Output/preferences/XPilotViewPrefs.json**
+
+This file is updated by the Preferences Panel during a save but also can be updated by manual editing of the values. The file is in Json format. If the format is munged during a manual edit the plugin will throw an error. Should always create a backup before editing. The default file is configured like so:
+
+```text
+{
+    "filterLag": "10.0",
+    "pitchCurvature": "1.8",
+    "rollCurvature": "1.8",
+    "samplePeriod": "0.02",
+    "targetHeadAngle": "20",
+    "targetViewAngle": "90",
+    "ttyPath": "/dev/ttyUSB0",
+    "yawCurvature": "1.5"
+}
+```
+Note that there are two additional preferences not shown in the Preferences Panel: **targetHeadAngle** and **targetViewAngle**. The values for these settings are in degrees of yaw rotation. These settings map a head yaw angle to a corresponding view yaw angle such that, in the default setting, a head movement to 20 degrees from center will result in a view movement to 90 degrees from center. Because of the nonlinear transfer function described earlier, the view offcenter angle of 90 will occur exactly at a head offcenter angle of 20 and any other deflection relationships will depend on the values of the curvature settings.
 
 ## Parts List
 
