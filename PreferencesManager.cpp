@@ -140,10 +140,10 @@ void PreferencesManager::initPreferences()
         if (result < 0) // if error assume file is not there or corrupt so save a default set
         {
             preferences->setValue("ttyPath", "/dev/ttyUSB0");
-            preferences->setValue("yawCurvature", "1.8");
+            preferences->setValue("yawCurvature", "1.5");
             preferences->setValue("pitchCurvature", "1.8");
             preferences->setValue("rollCurvature", "1.8");
-            preferences->setValue("filterLag", "20.0");
+            preferences->setValue("filterLag", "10.0");
             preferences->setValue("targetHeadAngle", "20.0");
             preferences->setValue("targetViewAngle", "90.0");
             preferences->setValue("samplePeriod", "0.02");

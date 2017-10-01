@@ -45,6 +45,8 @@
 
 int CenterViewCommandHandler(XPLMCommandRef, XPLMCommandPhase, void *);
 int StartStopCommandHandler(XPLMCommandRef, XPLMCommandPhase, void *);
+int CalibrateOffsetCommandHandler(XPLMCommandRef, XPLMCommandPhase, void *);
+
 void mainMenuHandler(void *, void *);
 
 GyroManager gyroMgr;

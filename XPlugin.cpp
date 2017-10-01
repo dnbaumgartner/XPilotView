@@ -47,6 +47,11 @@ PLUGIN_API int XPluginStart(
             "Preferences",
             (void*) "Preferences",
             1);
+    XPLMAppendMenuItem(
+            mainMenu,
+            "Calibrate Gyro",
+            (void*) "Calibrate Gyro",
+            1);
 
     // Custom commands
     XPLMCommandRef centerViewCommand = XPLMCreateCommand(
@@ -66,6 +71,16 @@ PLUGIN_API int XPluginStart(
     XPLMRegisterCommandHandler(
             startStopCommand,
             StartStopCommandHandler,
+            1, // process before x-plane
+            (void *) 0);
+
+    XPLMCommandRef calibrateOffsetCommand = XPLMCreateCommand(
+            "XPilotView/View/CalibrateOffset",
+            "Calibrate gyro for offset drift.");
+
+    XPLMRegisterCommandHandler(
+            calibrateOffsetCommand,
+            CalibrateOffsetCommandHandler,
             1, // process before x-plane
             (void *) 0);
 
@@ -129,6 +144,10 @@ void mainMenuHandler(void *menu, void *item)
     {
         gyroMgr.showPreferencesPanel(true);
     }
+    if (std::string((char*) item) == "Calibrate Gyro")
+    {
+        gyroMgr.calibrateGyroOffset();
+    }
 }
 
 int CenterViewCommandHandler(XPLMCommandRef cmdRef, XPLMCommandPhase phase, void *refcon)
@@ -156,6 +175,15 @@ int StartStopCommandHandler(XPLMCommandRef cmdRef, XPLMCommandPhase phase, void 
                     LOOPTIME,
                     NULL);
         }
+    }
+    return 0;
+}
+
+int CalibrateOffsetCommandHandler(XPLMCommandRef cmdRef, XPLMCommandPhase phase, void *refcon)
+{
+    if (phase == xplm_CommandEnd)
+    {
+        gyroMgr.calibrateGyroOffset();
     }
     return 0;
 }

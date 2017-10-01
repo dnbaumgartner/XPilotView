@@ -54,9 +54,12 @@ public:
     GyroAnglesPtr getAngles();
     void showPreferencesPanel(bool);
     void setViewCenter();
+    void calibrateGyroOffset();
     void togglePreferencesPanel();
     static void decode(unsigned char buf[], float result[]);
     
+    static float rateoffset[3];
+    static bool calibrateGyro;
     static bool isRunning;
     static bool resetCenterView;
     static unsigned int sfd;
