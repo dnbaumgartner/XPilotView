@@ -1,4 +1,4 @@
-# XPilotView (DRAFT)
+# XPilotView Version 1.0 (DRAFT)
 
 A MEMS Gyroscope based head tracker for X-Plane 11. 
 
@@ -22,6 +22,10 @@ In addition, a tarball of the current release is available in dist/XPilotView.1.
 
 ## Operation
 
+Overview of XPilotView functionality goals. Only head yaw and pitch motions in this release. 
+
+Curvature explanation. Required stable centered view for focused flight operations (approaches, landings). Implement nonlinear transfer function mapping head position to view position such that the transfer function has a low gain in the region surrounding the centered view position and an accelerating gain as head moves further away from the centered position.
+
 ### Configuring the Gyro
 
 The user manual, setup guide, Android app .apk and other (Windows, ARM) app versions can be found at:
@@ -44,9 +48,9 @@ The following instructions are for the Android app. Other platform version have 
 
 ### Calibrating the Gyro
 
-The gyro occasionaly develops an offset in one of the rate axis. This is indicated when the view drifts while your head is held in a fixed position. Clicking the zeroing button temporarily returns the view to the center position but drifts off again. 
+The gyro occasionally develops an offset in one of the rate axis. This is indicated when the view drifts while your head is held in a fixed position. Clicking the zeroing button temporarily returns the view to the center position but drifts off again. 
 
-The gyro should be recalibrated by the following steps:
+The gyro should be recalibrated either from the X-Plane XPilotView menu setting as described in the following 'XPilotView Settings' section or by the following steps using the Android Billiard (MiniIMUEn) app:
 
 1) Connect the Billiard app (MiniIMUEn.apk) to the gyro.
 1) Select the Config display.
@@ -75,7 +79,18 @@ Once the device and software are working correctly, the gyro and USB modules can
 
 ### X-Plane Setup
 
+XPilotView menu options.
+
+Binding XPilotView commands to joystick buttons.
+
+
 ### XPilotView Settings
+
+Preferences selection panel for subset of preference variables.
+
+Location of preferences file.
+
+Explanation of each preference variable.
 
 ## Parts List
 
