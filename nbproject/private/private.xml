@@ -9,10 +9,9 @@
         <group>
             <file>file:/home/dave/NetBeansProjects/XPilotView/GyroManager.cpp</file>
             <file>file:/home/dave/NetBeansProjects/XPilotView/XPlugin.hpp</file>
-            <file>file:/home/dave/NetBeansProjects/XPilotView/GyroAngles.hpp</file>
-            <file>file:/home/dave/NetBeansProjects/XPilotView/PreferencesPanel.cpp</file>
             <file>file:/home/dave/NetBeansProjects/XPilotView/XPlugin.cpp</file>
             <file>file:/home/dave/NetBeansProjects/XPilotView/PreferencesManager.cpp</file>
+            <file>file:/home/dave/NetBeansProjects/XPilotView/GyroManager.hpp</file>
         </group>
     </open-files>
 </project-private>
