@@ -44,7 +44,7 @@ https://drive.google.com/file/d/0B8PmY6nhQadKLWdxN2VNY1E1OWc/view
 Other useful information can be found in the Amazon questions section:
 https://www.amazon.com/MPU6050-Bluetooth-Accelerometer-Gyroscope-Four-rotor/dp/B018NNAZW8#Ask
 
-The following instructions are for the Android app. Other platform version have not been tried.
+The following instructions are for the Android app.
 
 1) Install the MiniIMUEn.apk in your Android phone. This app will be listed in your app matrix as "Billiard".
 1) Plug the USB connector into the host computer.
@@ -58,10 +58,11 @@ The following instructions are for the Android app. Other platform version have 
 
 ### Calibrating the Gyro
 
-The gyro occasionally develops an offset in one of the rate axis. This is indicated when the centerpoint of the view drifts while your head is held in a fixed position. Clicking the zeroing button will temporarily return the view to the center position but drifts off again. 
+The gyro occasionally develops an offset in one of the rate axis. This is indicated when the centerpoint of the view drifts while your head/gyro is held in a fixed position. Clicking the zeroing button will temporarily return the view to the center position but drifts off again. 
 
 The gyro offset can be recalibrated either from the X-Plane XPilotView menu setting as described in the following **XPilotView Settings** section or by the following steps using the Android Billiard (MiniIMUEn) app:
 
+1) As before, plug the USB adapter into the host computer while maintaining the gyro module on a stable surface.
 1) Connect the Billiard app (MiniIMUEn.apk) to the gyro.
 1) Select the Config display.
 1) Set the gyro module on a stationary surface in an orientation similar to the operating orientation.
@@ -74,16 +75,16 @@ The gyro offset can be recalibrated either from the X-Plane XPilotView menu sett
 
 ### Gyro Sensor Installation
 
-As mentioned previously, this developer mounted the gyro module on the inside top of a cap.
+As mentioned previously, I mount the gyro module on the inside top of a cap.
 
 The orientation of the gyro is critical. Please note the photo of the gyro module in the following Parts List section.
- * The side of the module shown in the picture will be oriented as the bottom side next to the head. The Bluetooth antenna side will be on the top next to the inside of the cap.
+ * The side of the module shown in the picture will be oriented as the bottom side next to the head. The Bluetooth antenna side will be the up side next to the inside of the cap.
  * The gyro module should be rotated so that the X-Axis (Roll) arrow in the photo should be pointing to the left side of the head.
  * The gyro connector side should be on the right.
 
 This particular orientation is so because we're using the Roll axis to measure the head pitch instead of the Pitch axis. The Pitch axis has some not well understood interaction with the Yaw axis that we can ignore if we use the Roll axis for head pitch instead.
 
-The connector pins on the gyro module are inconvenient because they protrude at right angles to the module board and conflict with the head space inside the cap. This developer soldered new pins that extend to the side and clipped off the original pins.
+The connector pins on the gyro module are inconvenient because they protrude at right angles to the module board and conflict with the head space inside the cap. I modified the connection by soldering new pins that extend to the side and clipped off the original pins.
 
 Once the device and software are working correctly, the gyro and USB modules can be protected with shrink tubing from your local Frys Electronics.
 
@@ -104,20 +105,20 @@ I use a Microsoft Sidewinder Precision Pro joystick and it is useful to bind but
 
 The XPilotView menu will have two selections: **Preferences** and **Calibrate Gyro**.
 
-The menu **Calibrate Gyro** selection will force a recalibration of the gyro rate offset values. This recalibration will take approximately three seconds. **It is necessary for head tracking to be started and running during calibration**. As with any calibration event, it is necessary that the gyro be placed securely on a stable surface. Having the gyro fixed to your head and keeping your head still during the calibration is not enough and will almost guarantee an offset drift.
+The **Calibrate Gyro** selection will force a recalibration of the gyro rate offset values. This recalibration will take approximately three seconds. **It is necessary for head tracking to be started and running during calibration**. As with any calibration event, it is necessary that the gyro be placed securely on a stable surface. Having the gyro fixed to your head and keeping your head still during the calibration is not good enough and will almost guarantee an offset drift.
 
 The menu **Preferences** selection will present a Preferences Panel for changing some preference values:
   * TTY Path - The serial tty port assigned to the USB serial adapter.
-  * Yaw Curvature - Determines the degree of the yaw null zone around the view center. Reasonable values to use are 1.2 to 1.9.
+  * Yaw Curvature - Determines the degree of the yaw null zone around the view center. Reasonable values to use are 1.2 to 1.9. A higher number creates a more extreme curve.
   * Pitch Curvature - Determines the degree of the pitch null zone around the view center.
   * Roll Curvature - Not used at this time.
-  * Smoothing - Roughly represents the number of gyro measurements to average over. Higher values for very smooth but slower response time, lower values for more responsive behavior but possibly more jitter.
+  * Smoothing - Roughly represents the number of gyro measurements to average over. Use higher values for very smooth but slower response time and lower values for more responsive behavior but possibly more jitter.
 
 A default preferences configuration file will be created when the plugin is initialized by X-Plane for the first time. The location of this file is in the X-Plane directory as: 
 
 **Output/preferences/XPilotViewPrefs.json**
 
-This file is updated by the Preferences Panel during a save but also can be updated by manual editing of the values. The file is in Json format. If the format is munged during a manual edit the plugin will throw an error. Should always create a backup before editing. The default file is configured like so:
+This file is updated by the Preferences Panel during a save but also can be updated by manual editing of the values. The file is in Json format. If the format is munged during a manual edit the plugin will throw an error. One should always create a backup before editing. The default file is configured like so:
 
 ```text
 {
@@ -131,7 +132,7 @@ This file is updated by the Preferences Panel during a save but also can be upda
     "yawCurvature": "1.5"
 }
 ```
-Note that there are two additional preferences not shown in the Preferences Panel: **targetHeadAngle** and **targetViewAngle**. The values for these settings are in degrees of yaw rotation. These settings map a head yaw angle to a corresponding view yaw angle such that, in the default setting, a head movement to 20 degrees from center will result in a view movement to 90 degrees from center. Because of the nonlinear transfer function described earlier, the view offcenter angle of 90 will occur exactly at a head offcenter angle of 20 and any other deflection relationships will depend on the values of the curvature settings.
+Note that there are two additional preferences not shown in the GUI Preferences Panel: **targetHeadAngle** and **targetViewAngle**. The values for these settings are in degrees of rotation for both yaw and pitch. These settings map a head yaw angle to a corresponding view yaw angle such that, in the default setting, a head movement to 20 degrees from center will result in a view movement to 90 degrees from center. Because of the nonlinear transfer function described earlier, the view offcenter angle of 90 will occur exactly at a head offcenter angle of 20 and any other deflection relationships will depend on the values of the curvature settings.
 
 ## Parts List
 
@@ -160,7 +161,7 @@ Here is the list of the necessary hardware parts. You must have sufficient skill
 ## Development Environment
 
 ### OS, IDE, Compilers
-The development environment and target operating environment is Linux. There no plans for iOS or Windows versions.
+The development environment and target operating environment is Linux. There are no plans for iOS or Windows versions.
 
 The development OS is Linux Mint 18.1 (Ubuntu 16.04) which is also the testing and operating platform.
 
@@ -174,19 +175,21 @@ The GUI is built on the Qt application development framework, version 5.5.
 
 The 64-bit [X-Plane SDK 2.1.3](http://www.xsquawkbox.net/xpsdk/mediawiki/Main_Page). 
 
+JSON for Modern C++: https://github.com/nlohmann/json  (included in the XPilotView source tree)
+
 ## Software Design
-The main theme of the software design is to execute all functions of the plugin in isolation from the X-Plane runtime threading system in order to minimize any perturbations of the X-Plane cycle time. The principle function of the XPlugin module is then to simply and asyncronously fetch computed view angles and write the same to the appropriate X-Plane variables. All GUI operations are performed by threaded QtApplication classes and all interactions with the gyro device and subsequent computations execute in the context of a dedicated thread independent of the X-Plane runtime.
+The main theme of the software design is to execute all functions of the plugin in isolation from the X-Plane runtime threading system in order to minimize any perturbations of the X-Plane cycle time. The principle function of the XPlugin module is then to asyncronously fetch computed view angles from a shared data object and write the angles to the appropriate X-Plane variables. All GUI operations are performed by threaded QtApplication classes and all interactions with the gyro device and subsequent computations execute in the context of a dedicated thread independent of the X-Plane runtime.
 
 The major components of the design are the following classes:
 * XPlugin:
   * Interface to X-Plane.
   * Writes computed head angles to X-Plane view angle variables.
-  * Passes X-Plane Start/Stop, View Center and Preferences menu commands to the plugin main codes.
+  * Passes X-Plane Start/Stop, View Center action events and Preferences menu commands to the plugin main codes.
 
 * GyroManager:
-  * Manages gyro read thread (Start/Stop) in isolation from the X-Plane runtime.
-  * Handles X-Plane preferences menu request.
-  * Computes transfer function mapping physical head movements to view commands.
+  * Manages the gyro read thread (Start/Stop) in isolation from the X-Plane runtime.
+  * Handles X-Plane preferences menu requests.
+  * Computes the transfer function that maps physical head movements to view commands.
 
 * PreferencesManager:
   * Initializes and show/hides the Preferences panel.
@@ -194,7 +197,7 @@ The major components of the design are the following classes:
   * Manages the stored preferences file.
 
 * PreferencesPanel:
-  * Instanciates the PreferencesPanel object from the Qt .ui configuration.
+  * Instantiates the PreferencesPanel object from the Qt .ui configuration file. The .ui file is developed and maintained by QT Designer.
 
 Helper classes are:
 * GyroAngles:
@@ -222,4 +225,4 @@ See the [COPYING](COPYING) file for details
 
 ## Acknowledgments
 
-* Inspiration
+* Many thanks to Bob "Blue Side Up" Feaver for encouraging me to take look at X-Plane plugin development.
