@@ -2,11 +2,11 @@
 
 A MEMS Gyroscope based head tracker for X-Plane 11. 
 
-This head tracker is yet another variation on the utility of controlling the pilots view in the X-Plane simulator window by moving the sim pilots head in desired orientations. Other head trackers have been developed using infrared emitters and reflectors on the pilots head which are then tracked with an infrared web cam and associated software drivers. Other head trackers use some variation of image recognition to track head movements and orientations which are translated into sim view commands.
+The XPilotView head tracker is yet another variation on the utility of controlling the pilots view in the X-Plane simulator window by sensing the motion of the sim pilots head. Other head trackers have been developed using infrared emitters and reflectors on the pilots head which are then tracked with an infrared web cam and associated software drivers. Also, other head trackers use some variation of image recognition to track head movements and orientations which are translated into sim view commands.
 
 Previous implementations of gyroscope-based head tracking have generally used smart phone internal gyros as the sensor. The MEMS gyroscope used in this project has made low cost gyro head tracking possible.
 
-The small size (thumbnail) of the MEMS gyroscope allows to mount the device on the pilots head in such a way to capture the yaw and pitch motions. One mounting method is to fasten (tape?) the MEMS device to the inside top of a cap which then is worn on the pilots head.
+The small size of the MEMS gyroscope allows to mount the device on the pilots head in such a way as to capture the pilots head yaw and pitch motions. One mounting method is to fasten (tape?) the MEMS device to the inside top of a cap which then is worn on the pilots head.
 
 ## Supported platforms
 
@@ -14,7 +14,7 @@ XPilotView is developed for Linux 64-bit systems only. See the Development Envir
 
 ## Deployment
 
-The built plugin is stored as dist/Debug/XPilotView/64/lin.xpl. 
+The plugin is built and stored in dist/Debug/XPilotView/64/lin.xpl in the development tree. 
 
 Copy the XPilotView/64/lin.xpl directory tree into the X-Plane resources/plugins folder. 
 
@@ -22,19 +22,19 @@ In addition, a tarball of the current release is available in dist/XPilotView.1.
 
 ## Operation
 
-The functionality goals of this version of XPilotView are:
+The goals of this version of XPilotView are:
   * Provide reliable, accurate head tracking input to X-Plane with minimal external gear.
-  * Capture yaw and pitch angular head motions as input. Xyz head displacements are not computed.
-  * Provide a quick enable/disable control input via a joystick/keyboard button.
+  * Capture only the yaw and pitch head motions as angular data. Xyz head displacements are not computed in this version.
+  * Provide a start/stop control input via a joystick/keyboard button.
   * Provide a view recentering action via a joystick/keyboard button.
   * Provide a gyro rate offset calibration via the XPilotView menu in X-Plane.
   * Implement a low sensitivity zone around the view center point with increasing sensitivity away from the center point.
 
-The low sensitivity zone requires an explanation. It was found with early versions of this software that the gyro was very sensitive and given a linear response to head movements, the view would move around in response to slight head movements. This proved to be distracting during focused periods of flight such as landing, maneuvering and instrument scans. The solution was to implement a nonlinear transfer function mapping the head position to view position such that the transfer function has a low gain in the region surrounding the centered view position and an accelerating gain as head moves further away from the centered position.
+The low sensitivity zone requires an explanation. It was found with early versions of this software that the gyro was very sensitive and given a linear response to head movements, the view would move around in response to slight head movements. This proved to be distracting during focused periods of flight such as landing, maneuvering and instrument scans. The solution was to implement a nonlinear transfer function mapping the head position to the view position such that the transfer function has a low gain in the region surrounding the centered view position and an accelerating gain as head moves further away from the centered position.
 
 ### Connecting the Gyro
 
-The gyro module is connected to the USB serial adapter via a flat cable and connector pins as listed in the **Parts List** section. When the gyro module and USB adapter are wired correctly per the user manual, the module receives power from the 5 volt pinout of the USB serial convertor. Since the gyro performs a self-calibration on power up, it is important that the **module should be kept stationary on a stable surface during the short powerup sequence (a few seconds)**. If the gyro experiences any motion or vibration during this phase, the gyro make be calibrated with an offset in one or more of the rate axis. 
+The gyro module is connected to the USB serial adapter via a flat cable and connector pins as listed in the **Parts List** section. You should allow for a sufficient length of ribbon cable to reach from the pilots head to the USB port of the simulation computer. When the gyro module and USB adapter are wired correctly per the user manual, the module receives power from the 5 volt pinout of the USB serial convertor. Since the gyro performs a self-calibration on power up, it is important that the **module should be kept stationary on a stable surface during the short powerup sequence (a few seconds)**. If the gyro experiences any motion or vibration during this phase, the gyro may be calibrated with an offset in one or more of the rate axis. 
 
 ### Configuring the Gyro
 
@@ -104,7 +104,7 @@ I use a Microsoft Sidewinder Precision Pro joystick and it is useful to bind but
 
 The XPilotView menu will have two selections: **Preferences** and **Calibrate Gyro**.
 
-The menu **Calibrate Gyro** selection will force a recalibration of the gyro rate offset values. This recalibration will take approximately three seconds. As with any calibration event, it is necessary that the gyro be placed securely on a stable surface. Having the gyro fixed to your head and keeping your head still during the calibration is not enough and will almost guarantee an offset drift.
+The menu **Calibrate Gyro** selection will force a recalibration of the gyro rate offset values. This recalibration will take approximately three seconds. **It is necessary for head tracking to be started and running during calibration**. As with any calibration event, it is necessary that the gyro be placed securely on a stable surface. Having the gyro fixed to your head and keeping your head still during the calibration is not enough and will almost guarantee an offset drift.
 
 The menu **Preferences** selection will present a Preferences Panel for changing some preference values:
   * TTY Path - The serial tty port assigned to the USB serial adapter.
@@ -164,11 +164,11 @@ The development environment and target operating environment is Linux. There no 
 
 The development OS is Linux Mint 18.1 (Ubuntu 16.04) which is also the testing and operating platform.
 
-The code base is configured for NetBeans IDE 18.1 with the C/C++ plugin. The Makefile as configured by NetBeans also works as a standalone build tool.
+The code base is configured for NetBeans IDE 8.1 with the C/C++ plugin. The Makefile as configured by NetBeans also works as a standalone build tool.
 
 The compiler base is the GNU Compiler Collection version 5.4.0.
 
-Qt application development framework, version 5.5.
+The GUI is built on the Qt application development framework, version 5.5.
 
 ### Additional Software
 
