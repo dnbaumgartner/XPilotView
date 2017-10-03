@@ -146,7 +146,7 @@ void mainMenuHandler(void *menu, void *item)
     }
     if (std::string((char*) item) == "Calibrate Gyro")
     {
-        gyroMgr.calibrateGyroOffset();
+        CalibrateGyroOffset();
     }
 }
 
@@ -183,7 +183,7 @@ int CalibrateOffsetCommandHandler(XPLMCommandRef cmdRef, XPLMCommandPhase phase,
 {
     if (phase == xplm_CommandEnd)
     {
-        gyroMgr.calibrateGyroOffset();
+        CalibrateGyroOffset();
     }
     return 0;
 }
@@ -204,9 +204,19 @@ float FlightLoopCallback(
     // computed yaw and roll values which have no interaction for the 
     // commanded yaw and pitch and fix the commanded roll to zero.
     //
-    XPLMSetDataf(pilotsHeadPsi, angles.yaw);    // command yaw
-    XPLMSetDataf(pilotsHeadThe, angles.pitch);   // command pitch
-    XPLMSetDataf(pilotsHeadPhi, angles.roll);           // command roll
+    XPLMSetDataf(pilotsHeadPsi, angles.yaw); // command yaw
+    XPLMSetDataf(pilotsHeadThe, angles.pitch); // command pitch
+    XPLMSetDataf(pilotsHeadPhi, angles.roll); // command roll
 
     return LOOPTIME;
+}
+
+void CalibrateGyroOffset()
+{
+    if (GyroManager::isRunning)
+    {
+        XPLMUnregisterFlightLoopCallback(FlightLoopCallback, NULL);
+        gyroMgr.stop();
+    }
+    gyroMgr.calibrateGyroOffset();
 }

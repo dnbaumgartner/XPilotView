@@ -59,7 +59,6 @@ public:
     static void decode(unsigned char buf[], float result[]);
     
     static float rateoffset[3];
-    static bool calibrateGyro;
     static bool isRunning;
     static bool resetCenterView;
     static unsigned int sfd;
@@ -72,6 +71,7 @@ private:
     void startManagerThread();
     unsigned int opentty(std::string ttyPath);
     void initGyro();
+    void _calibrateGyroOffset();
 
 };
 

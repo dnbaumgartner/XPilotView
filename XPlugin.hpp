@@ -99,5 +99,7 @@ PLUGIN_API void XPluginReceiveMessage(
         int inMessage,
         void * inParam);
 
+void CalibrateGyroOffset();
+
 #endif /* XPLUGIN_HPP */
 

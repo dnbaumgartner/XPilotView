@@ -49,7 +49,6 @@ struct rotation
 };
 
 float GyroManager::rateoffset[3] = {0.0, 0.0, 0.0};
-bool GyroManager::calibrateGyro = false;
 bool GyroManager::isRunning = false;
 bool GyroManager::resetCenterView = false;
 unsigned int GyroManager::sfd;
@@ -120,15 +119,14 @@ void GyroManager::setViewCenter()
 
 void GyroManager::calibrateGyroOffset()
 {
-    calibrateGyro = true;
+    GyroManager::stop();
+    GyroManager::_calibrateGyroOffset();
 }
 
 void *GyroManagerThread(void *arg)
 {
     KeyValueStore* preferences = KeyValueStore::Instance();
 
-    int calcount = 0;
-    
     unsigned char buf[80];
     float rawrate[3];
     AngleSet lastAngle = {0.0, 0.0, 0.0};
@@ -188,79 +186,50 @@ void *GyroManagerThread(void *arg)
                 if (buf[1] == GYRO)
                 {
                     GyroManager::decode(buf, rawrate);
-                    
-                    // In offset calibration mode we accumulate 100 samples
-                    // to calculate the average offset of each axis.
-                    // We make the rateoffset variables global so the offsets
-                    // persist across thread invocations.
-                    //
-                    if (GyroManager::calibrateGyro)
+
+                    // simple integration of the rates minus the offsets give deflection angles
+                    raw.roll += samplePeriod * (rawrate[0] - GyroManager::rateoffset[0]);
+                    raw.pitch += samplePeriod * (rawrate[1] - GyroManager::rateoffset[1]);
+                    raw.yaw += samplePeriod * (rawrate[2] - GyroManager::rateoffset[2]);
+
+                    try
                     {
-                        if (calcount == 0)
+                        // set the center null position to zero
+                        if (GyroManager::resetCenterView)
                         {
-                            GyroManager::rateoffset[0] = 0.0;
-                            GyroManager::rateoffset[1] = 0.0;
-                            GyroManager::rateoffset[2] = 0.0;
+                            // zero the integrated raw angles to correct for drift
+                            raw.roll = 0.0;
+                            raw.pitch = 0.0;
+                            raw.yaw = 0.0;
+
+                            GyroManager::viewCenter.setAngles(raw.roll, raw.pitch, raw.yaw);
+                            GyroManager::resetCenterView = false;
                         }
-                        GyroManager::rateoffset[0] += rawrate[0];
-                        GyroManager::rateoffset[1] += rawrate[1];
-                        GyroManager::rateoffset[2] += rawrate[2];
-                        
-                        if(calcount++ > 100)
-                        {
-                            GyroManager::rateoffset[0] = GyroManager::rateoffset[0]/calcount;
-                            GyroManager::rateoffset[1] = GyroManager::rateoffset[1]/calcount;
-                            GyroManager::rateoffset[2] = GyroManager::rateoffset[2]/calcount;
-                            calcount = 0;
-                            GyroManager::calibrateGyro = false;
-                        }
-                    }
-                    else
+
+                        // Translate to the center view point
+                        AngleSet centeredAngles = GyroManager::viewCenter.getAngleSet();
+                        smoothed.roll = raw.roll - centeredAngles.roll;
+                        smoothed.pitch = raw.pitch - centeredAngles.pitch;
+                        smoothed.yaw = raw.yaw - centeredAngles.yaw;
+
+                        // apply smoothing
+                        float diff = smoothed.roll - lastAngle.roll;
+                        smoothed.roll = lastAngle.roll + diff / filterLag;
+                        lastAngle.roll = smoothed.roll;
+
+                        diff = smoothed.pitch - lastAngle.pitch;
+                        smoothed.pitch = lastAngle.pitch + diff / filterLag;
+                        lastAngle.pitch = smoothed.pitch;
+
+                        diff = smoothed.yaw - lastAngle.yaw;
+                        smoothed.yaw = lastAngle.yaw + diff / filterLag;
+                        lastAngle.yaw = smoothed.yaw;
+
+                    } catch (const std::exception& ex)
                     {
-                        // simple integration of the rates minus the offsets give deflection angles
-                        raw.roll += samplePeriod * (rawrate[0]-GyroManager::rateoffset[0]);
-                        raw.pitch += samplePeriod * (rawrate[1]-GyroManager::rateoffset[1]);
-                        raw.yaw += samplePeriod * (rawrate[2]-GyroManager::rateoffset[2]);
-
-                        try
-                        {
-                            // set the center null position to zero
-                            if (GyroManager::resetCenterView)
-                            {
-                                // zero the integrated raw angles to correct for drift
-                                raw.roll = 0.0;
-                                raw.pitch = 0.0;
-                                raw.yaw = 0.0;
-
-                                GyroManager::viewCenter.setAngles(raw.roll, raw.pitch, raw.yaw);
-                                GyroManager::resetCenterView = false;
-                            }
-
-                            // Translate to the center view point
-                            AngleSet centeredAngles = GyroManager::viewCenter.getAngleSet();
-                            smoothed.roll = raw.roll - centeredAngles.roll;
-                            smoothed.pitch = raw.pitch - centeredAngles.pitch;
-                            smoothed.yaw = raw.yaw - centeredAngles.yaw;
-
-                            // apply smoothing
-                            float diff = smoothed.roll - lastAngle.roll;
-                            smoothed.roll = lastAngle.roll + diff / filterLag;
-                            lastAngle.roll = smoothed.roll;
-
-                            diff = smoothed.pitch - lastAngle.pitch;
-                            smoothed.pitch = lastAngle.pitch + diff / filterLag;
-                            lastAngle.pitch = smoothed.pitch;
-
-                            diff = smoothed.yaw - lastAngle.yaw;
-                            smoothed.yaw = lastAngle.yaw + diff / filterLag;
-                            lastAngle.yaw = smoothed.yaw;
-
-                        } catch (const std::exception& ex)
-                        {
-                            std::string msg(std::string("XPilotView: GyroManager::GyroManagerThread():processing angle values : ") + ex.what());
-                            XPilotViewUtils::logMessage(msg);
-                            break;
-                        }
+                        std::string msg(std::string("XPilotView: GyroManager::GyroManagerThread():processing angle values : ") + ex.what());
+                        XPilotViewUtils::logMessage(msg);
+                        break;
                     }
 
                     // Apply exponential acceleration to the head angle
@@ -414,5 +383,76 @@ void GyroManager::decode(unsigned char buf[], float result[])
                 break;
         }
     }
+}
+
+#define CALIBMAXLOOPS 1000
+#define CALIBMAXCOUNT 100
+
+void GyroManager::_calibrateGyroOffset()
+{
+    bool isCalibrating = true;
+    int calcount = 0;
+    int maxLoops = 0;
+    float rawrate[3];
+    unsigned int sfd;
+    unsigned char buf[80];
+
+    std::string ttypath = KeyValueStore::Instance()->getValue("ttyPath");
+    sfd = this->opentty(ttypath);
+
+    while (isCalibrating)
+    {
+        int rdlen = read(sfd, buf, 1);
+
+        if (rdlen > 0)
+        {
+            if (buf[0] == 0x55)
+            {
+                rdlen = read(GyroManager::sfd, &buf[1], 10);
+
+                if (buf[1] == GYRO)
+                {
+                    GyroManager::decode(buf, rawrate);
+
+                    // In offset calibration mode we accumulate 100 samples
+                    // to calculate the average offset of each axis.
+                    // We make the rateoffset variables global so the offsets
+                    // persist across thread invocations.
+                    //
+                    if (calcount == 0)
+                    {
+                        GyroManager::rateoffset[0] = 0.0;
+                        GyroManager::rateoffset[1] = 0.0;
+                        GyroManager::rateoffset[2] = 0.0;
+                    }
+                    GyroManager::rateoffset[0] += rawrate[0];
+                    GyroManager::rateoffset[1] += rawrate[1];
+                    GyroManager::rateoffset[2] += rawrate[2];
+
+                    if (calcount++ > CALIBMAXCOUNT)
+                    {
+                        GyroManager::rateoffset[0] = GyroManager::rateoffset[0] / calcount;
+                        GyroManager::rateoffset[1] = GyroManager::rateoffset[1] / calcount;
+                        GyroManager::rateoffset[2] = GyroManager::rateoffset[2] / calcount;
+                        isCalibrating = false;
+                    }
+                }
+            }
+        }
+        if (maxLoops++ > CALIBMAXLOOPS) // provide a way to escape from bad data
+        {
+            isCalibrating = false;
+
+            GyroManager::rateoffset[0] = 0.0;
+            GyroManager::rateoffset[1] = 0.0;
+            GyroManager::rateoffset[2] = 0.0;
+
+            std::string msg(std::string("XPilotView: calibrateGyroOffset : Bad gyro data, max loops exceeded!!"));
+            XPilotViewUtils::logMessage(msg);
+        }
+    }
+
+    tcsetattr(sfd, TCSANOW, &savetty);
+    close(sfd);
 }
 
