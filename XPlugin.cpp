@@ -197,17 +197,9 @@ float FlightLoopCallback(
 {
     AngleSet angles = gyroAngles->getAngleSet();
 
-    // The sensor is mounted 90 degrees off the forward/aft center line so the 
-    // computed roll becomes the pitch. We'll set the commanded roll
-    // value to zero. We do this because there is cross talk between the
-    // computed yaw and pitch channels such that varying the pitch will
-    // induce a yaw change. So we rotate the sensor 90 degrees and use the 
-    // computed yaw and roll values which have no interaction for the 
-    // commanded yaw and pitch and fix the commanded roll to zero.
-    //
-    XPLMSetDataf(pilotsHeadPsi, angles.yaw);    // command yaw
+    XPLMSetDataf(pilotsHeadPsi, angles.yaw);     // command yaw
     XPLMSetDataf(pilotsHeadThe, angles.pitch);   // command pitch
-    XPLMSetDataf(pilotsHeadPhi, angles.roll);           // command roll
+    XPLMSetDataf(pilotsHeadPhi, angles.roll);    // command roll
 
     return LOOPTIME;
 }
