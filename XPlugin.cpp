@@ -27,7 +27,7 @@ PLUGIN_API int XPluginStart(
     int pluginMenuItem;
 
     strcpy(outName, "XPilotView");
-    strcpy(outSig, "com.antelopevisuals.xpilotview.0.1");
+    strcpy(outSig, "com.antelopevisuals.xpilotview.1.0");
     strcpy(outDesc, "Controls pilot's view from a head mounted gyro.");
 
     // Menu setup
