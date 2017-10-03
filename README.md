@@ -118,7 +118,9 @@ A default preferences configuration file will be created when the plugin is init
 
 **Output/preferences/XPilotViewPrefs.json**
 
-This file is updated by the Preferences Panel during a save but also can be updated by manual editing of the values. The file is in Json format. If the format is munged during a manual edit the plugin will throw an error. One should always create a backup before editing. The default file is configured like so:
+This file is updated by the Preferences Panel during a save but also can be updated by manual editing of the values. Any changes to the preference values will not take effect until the tracking is stopped and started again.
+
+The file is in Json format. If the format is munged during a manual edit the plugin will throw an error. One should always create a backup before editing. The default file is configured like so:
 
 ```text
 {
@@ -151,6 +153,8 @@ Here is the list of the necessary hardware parts. You must have sufficient skill
 ### Wire Cable
 
 [Ribbon cable](https://www.amazon.com/gp/product/B007R9SQQM/ref=od_aui_detailpages00?ie=UTF8&psc=1)
+
+Since there are only four pins on each end to be connected, a four wire strip of the ribbon can be ripped off the wider ribbon. This will make a more flexible and convenient connecting cable.
 
 ### Connectors
 
