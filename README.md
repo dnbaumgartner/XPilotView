@@ -105,7 +105,7 @@ I use a Microsoft Sidewinder Precision Pro joystick and it is useful to bind but
 
 The XPilotView menu will have two selections: **Preferences** and **Calibrate Gyro**.
 
-The **Calibrate Gyro** selection will force a recalibration of the gyro rate offset values. This recalibration will take approximately three seconds. **It is necessary for head tracking to be started and running during calibration**. As with any calibration event, it is necessary that the gyro be placed securely on a stable surface. Having the gyro fixed to your head and keeping your head still during the calibration is not good enough and will almost guarantee an offset drift.
+The **Calibrate Gyro** selection will force a recalibration of the gyro rate offset values. This recalibration will take approximately three seconds and the X-Plane view will be frozen during the recalibration. If head tracking is active, it will be stopped and must be manually restarted if desired. As with any calibration event, it is necessary that the gyro be placed securely on a stable surface. Having the gyro fixed to your head and keeping your head still during the calibration is not good enough and will almost guarantee an offset drift.
 
 The menu **Preferences** selection will present a Preferences Panel for changing some preference values:
   * TTY Path - The serial tty port assigned to the USB serial adapter.
