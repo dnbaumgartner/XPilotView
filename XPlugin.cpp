@@ -84,6 +84,7 @@ PLUGIN_API int XPluginStart(
             1, // process before x-plane
             (void *) 0);
 
+    // get pointer to the shared angles object
     gyroAngles = gyroMgr.getAngles();
 
     pilotsHeadPsi = XPLMFindDataRef("sim/graphics/view/pilots_head_psi"); // yaw
