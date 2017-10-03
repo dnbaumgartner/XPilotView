@@ -196,11 +196,11 @@ float FlightLoopCallback(
         void * refcon)
 {
     AngleSet angles = gyroAngles->getAngleSet();
-    
+
     XPLMSetDataf(pilotsHeadPsi, angles.yaw);     // command yaw
     XPLMSetDataf(pilotsHeadThe, angles.pitch);   // command pitch
     XPLMSetDataf(pilotsHeadPhi, angles.roll);    // command roll
-    
+
     return LOOPTIME;
 }
 
