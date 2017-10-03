@@ -40,7 +40,7 @@
                    projectFiles="false"
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>Makefile</itemPath>
-      <itemPath>dist/XPilotView.1.0.0.tar.gz</itemPath>
+      <itemPath>dist/XPilotView.1.0.1.tar.gz</itemPath>
     </logicalFolder>
     <itemPath>COPYING</itemPath>
   </logicalFolder>
